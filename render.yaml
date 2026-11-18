@@ -1,0 +1,96 @@
+# ==============================================================================
+# Render Blueprint Specification — Twin Trace & RecallRoom XR
+# Meta VR Start Developer Competition 2026 (Productivity Track)
+#
+# Deploys:
+#   1. twintrace-hub:      Master Project Command Center & Presentation Hub (Static)
+#   2. twintrace-webxr:    Spatial Twin Trace Split Lab VR Experience (Static)
+#   3. recallroom-webxr:   Spatial WebXR Memory Palace Laboratory (Static)
+#   4. recallroom-backend: FastAPI AI Microservice (Docker container)
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Master Command Center & Presentation Hub (Static Site)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: twintrace-hub
+    runtime: static
+    buildCommand: echo "Twin Trace & RecallRoom XR Hub Ready"
+    staticPublishPath: .
+    autoDeploy: true
+    headers:
+      - path: /*
+        name: Permissions-Policy
+        value: "xr-spatial-tracking=*, microphone=*"
+      - path: /*
+        name: Access-Control-Allow-Origin
+        value: "*"
+
+  # ----------------------------------------------------------------------------
+  # 2. Twin Trace Dedicated Split Lab VR (Static Site)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: twintrace-webxr
+    runtime: static
+    buildCommand: echo "Twin Trace Split Lab WebXR Ready"
+    staticPublishPath: ./meta-hackathon/twintrace
+    autoDeploy: true
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: Permissions-Policy
+        value: "xr-spatial-tracking=*"
+      - path: /*
+        name: Access-Control-Allow-Origin
+        value: "*"
+
+  # ----------------------------------------------------------------------------
+  # 3. RecallRoom XR Dedicated Spatial Memory Palace (Static Site)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: recallroom-webxr
+    runtime: static
+    buildCommand: echo "RecallRoom XR WebXR Ready"
+    staticPublishPath: ./recallroom-xr
+    autoDeploy: true
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: Permissions-Policy
+        value: "xr-spatial-tracking=*, microphone=*"
+      - path: /*
+        name: Access-Control-Allow-Origin
+        value: "*"
+
+  # ----------------------------------------------------------------------------
+  # 4. AI Inference Backend (FastAPI + Whisper ASR + Sentence Transformers)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: recallroom-backend
+    runtime: docker
+    dockerfilePath: ./recallroom-xr/backend/Dockerfile
+    dockerContext: ./recallroom-xr/backend
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ASR_MODEL
+        value: tiny.en
+      - key: SEMANTIC_MODEL
+        value: all-MiniLM-L6-v2
+      - key: THRESHOLD_CORRECT
+        value: "0.75"
+      - key: THRESHOLD_PARTIAL
+        value: "0.50"
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: PORT
+        value: "8000"
