@@ -1,5 +1,12 @@
 ﻿{
     "mcpServers":  {
+                       "iwer":  {
+                                    "command":  "npx",
+                                    "args":  [
+                                                 "-y",
+                                                 "@iwer/extension-bridge"
+                                             ]
+                                },
                        "figma":  {
                                      "type":  "http",
                                      "url":  "https://mcp.figma.com/mcp"
