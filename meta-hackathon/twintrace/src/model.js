@@ -15,6 +15,14 @@ export function estimateRetention(history, currentTime = Date.now()) {
   const nMistakes = history.mistakeCount || 0;
   const logHalfLife = 4.58 + 0.65 * nCorrect - 0.75 * nMistakes;
   const halfLifeHours = Math.pow(2, Math.max(0.5, logHalfLife));
+  if (deltaHours < 0.001) {
+    return {
+      retention: 1.0,
+      halfLifeHours: Number(halfLifeHours.toFixed(1)),
+      deltaHours: 0,
+      dueForReview: false
+    };
+  }
   const retention = Math.pow(2, -deltaHours / halfLifeHours);
   return {
     retention: Math.max(0, Math.min(1, retention)),
