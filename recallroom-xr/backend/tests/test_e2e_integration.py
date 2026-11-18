@@ -61,7 +61,8 @@ class TestUnityClientIntegration:
     def test_e2e_transcribe_multipart_form(self, client: TestClient, sample_wav_bytes: bytes):
         """Simulates Unity WWWForm binary upload of recorded mic audio."""
         files = {"file": ("recording.wav", sample_wav_bytes, "audio/wav")}
-        resp = client.post("/api/transcribe", files=files)
+        headers = {"X-Mock-Transcript": "The TCP three-way handshake establishes a connection using SYN and ACK."}
+        resp = client.post("/api/transcribe", files=files, headers=headers)
         assert resp.status_code == 200
         data = resp.json()
         assert "transcript" in data

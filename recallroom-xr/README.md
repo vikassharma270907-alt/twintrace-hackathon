@@ -6,6 +6,15 @@ RecallRoom XR transforms any physical room into an active memory palace. By comb
 
 ---
 
+## Live Deployment & Submission
+
+* **Live WebXR Preview (Render CDN):** [recallroom-webxr.onrender.com](https://recallroom-webxr.onrender.com/)
+* **Official GitHub Repository:** [github.com/vikassharma270907-alt/recallroom-xr](https://github.com/vikassharma270907-alt/recallroom-xr)
+* **Devpost Submission Form:** [DEVPOST_SUBMISSION.md](DEVPOST_SUBMISSION.md)
+* **Local Zero-Dependency Preview:** Open `OPEN_ME.html` in Chrome, Edge, or Meta Quest Browser.
+
+---
+
 ## Key Capabilities
 
 * **Physical Surface Snapping & Spatial Anchors:** Uses the Meta Mixed Reality Utility Kit (MRUK v65+) and `OVRSpatialAnchor` to detect real-world desks, shelves, and walls, pinning 3D study cards to physical objects with persistent room coordinates.

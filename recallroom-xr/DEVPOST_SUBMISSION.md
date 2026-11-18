@@ -18,7 +18,7 @@
 | **Division** | `New Experience` |
 | **Target Platform** | `Meta Quest 3, Meta Quest 3S, Meta Quest Pro` |
 | **Input Modality** | `Hands-Only Interaction (Direct Pinch, Ray-Pinch, Seated Desk Arc)` |
-| **Live Interactive WebXR Preview** | `https://recallroom-xr.vercel.app` (or local `OPEN_ME.html` in Chrome/Edge/Quest Browser) |
+| **Live Interactive WebXR Preview** | `https://recallroom-webxr.onrender.com` (or local `OPEN_ME.html` in Chrome/Edge/Quest Browser) |
 | **Repository URL** | `https://github.com/vikassharma270907-alt/recallroom-xr` |
 | **Demo Video Link** | `https://www.youtube.com/watch?v=<your-video-id>` (Duration: 120 seconds) |
 
