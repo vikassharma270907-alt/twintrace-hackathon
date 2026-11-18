@@ -1,0 +1,85 @@
+{
+  "id": "deck_networking_basics",
+  "title": "Networking Basics",
+  "description": "Essential computer networking protocols, architectures, and addressing fundamentals.",
+  "category": "Computer Science",
+  "iconName": "icon_network",
+  "targetTimeSeconds": 300,
+  "cards": [
+    {
+      "id": "net_osi_layers",
+      "deckId": "deck_networking_basics",
+      "title": "OSI 7-Layer Model",
+      "summary": "Conceptual framework partitioning network communications into seven distinct abstraction layers.",
+      "mnemonic": "Please Do Not Throw Sausage Pizza Away (Physical, Data Link, Network, Transport, Session, Presentation, Application)",
+      "keywords": ["Physical", "Data Link", "Network", "Transport", "Session", "Presentation", "Application", "abstraction", "protocol stack"],
+      "acceptedAnswers": [
+        "The OSI model has 7 layers: Physical, Data Link, Network, Transport, Session, Presentation, Application",
+        "A 7-layer framework describing network protocols from physical hardware signals up to end-user applications."
+      ],
+      "difficulty": 2,
+      "category": "Architecture",
+      "hint": "Think of the mnemonic: 'Please Do Not Throw Sausage Pizza Away'."
+    },
+    {
+      "id": "net_tcp_handshake",
+      "deckId": "deck_networking_basics",
+      "title": "TCP 3-Way Handshake",
+      "summary": "Method used by TCP to establish a reliable full-duplex connection between client and server.",
+      "mnemonic": "SYN, SYN-ACK, ACK — Say Hello, Say Hello Back, Acknowledge Connection",
+      "keywords": ["SYN", "SYN-ACK", "ACK", "synchronize", "acknowledge", "sequence number", "handshake", "connection establishment"],
+      "acceptedAnswers": [
+        "The client sends SYN, the server responds with SYN-ACK, and the client replies with ACK to establish a connection.",
+        "A three-step handshake: SYN packet from client, SYN-ACK from server, ACK packet from client."
+      ],
+      "difficulty": 2,
+      "category": "Protocols",
+      "hint": "Three packet steps: client starts with SYN, server responds with both, client finishes with ACK."
+    },
+    {
+      "id": "net_dns_resolution",
+      "deckId": "deck_networking_basics",
+      "title": "DNS Resolution Hierarchy",
+      "summary": "Hierarchical decentralized naming system translating human-friendly domain names to IP addresses.",
+      "mnemonic": "Root to TLD to Authoritative: Root tree branches down to specific dot-coms to authoritative host records.",
+      "keywords": ["DNS", "Root server", "TLD", "Authoritative", "recursive resolver", "IP address", "domain name", "A record"],
+      "acceptedAnswers": [
+        "A recursive resolver queries the Root server, then the TLD server, and finally the Authoritative name server for the IP address.",
+        "DNS translates domain names into numerical IP addresses through root, top-level domain, and authoritative servers."
+      ],
+      "difficulty": 3,
+      "category": "Services",
+      "hint": "Hierarchical lookup steps: Recursive resolver -> Root -> TLD (.com) -> Authoritative server."
+    },
+    {
+      "id": "net_nat_traversal",
+      "deckId": "deck_networking_basics",
+      "title": "NAT Traversal (STUN/TURN/ICE)",
+      "summary": "Techniques allowing peer-to-peer communication across Network Address Translation (NAT) gateways and firewalls.",
+      "mnemonic": "STUN Sees you, TURN Relays you, ICE Chooses the path",
+      "keywords": ["NAT", "STUN", "TURN", "ICE", "peer-to-peer", "public IP", "relay server", "hole punching"],
+      "acceptedAnswers": [
+        "STUN discovers public IP/ports, TURN acts as a fallback relay server, and ICE coordinates candidate path selection.",
+        "NAT traversal uses STUN for discovery, TURN for relay fallback, and ICE to negotiate the best media path."
+      ],
+      "difficulty": 4,
+      "category": "Protocols",
+      "hint": "STUN discovers public endpoint, TURN acts as relay fallback, ICE coordinates candidate selection."
+    },
+    {
+      "id": "net_subnet_mask",
+      "deckId": "deck_networking_basics",
+      "title": "Subnet Mask & CIDR",
+      "summary": "Bitmask separating IP addresses into network prefix bits and host identifier bits.",
+      "mnemonic": "Mask covers the network, leftover bits name the hosts (e.g. /24 leaves 8 host bits for 254 hosts).",
+      "keywords": ["subnet mask", "CIDR", "network prefix", "host identifier", "slash notation", "bitwise AND", "broadcast address"],
+      "acceptedAnswers": [
+        "A 32-bit number performing bitwise AND with an IP address to isolate network ID from host ID, denoted by slash notation.",
+        "Subnet masking divides an IP network into subnetworks using prefix length notation such as /24."
+      ],
+      "difficulty": 3,
+      "category": "Addressing",
+      "hint": "Bitwise mask separating network prefix from host bits, commonly expressed in CIDR slash notation."
+    }
+  ]
+}

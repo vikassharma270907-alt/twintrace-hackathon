@@ -1,0 +1,20 @@
+{
+    "name": "RecallRoom",
+    "rootNamespace": "RecallRoom",
+    "references": [
+        "Unity.TextMeshPro",
+        "Unity.InputSystem",
+        "Oculus.VR",
+        "Oculus.Interaction",
+        "Meta.XR.MRUKCore"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

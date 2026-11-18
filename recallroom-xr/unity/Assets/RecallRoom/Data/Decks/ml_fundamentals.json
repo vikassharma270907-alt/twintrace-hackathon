@@ -1,0 +1,85 @@
+{
+  "id": "deck_ml_fundamentals",
+  "title": "ML Fundamentals",
+  "description": "Core machine learning algorithms, deep neural network mechanisms, and evaluation metrics.",
+  "category": "Artificial Intelligence",
+  "iconName": "icon_brain",
+  "targetTimeSeconds": 300,
+  "cards": [
+    {
+      "id": "ml_gradient_descent",
+      "deckId": "deck_ml_fundamentals",
+      "title": "Gradient Descent & Backprop",
+      "summary": "First-order iterative optimization algorithm for finding a local minimum of a differentiable objective function using the chain rule.",
+      "mnemonic": "Walk down the slope of steepest decline; chain rule propagates errors back to every weight.",
+      "keywords": ["gradient descent", "backpropagation", "loss function", "learning rate", "chain rule", "partial derivatives", "weights update"],
+      "acceptedAnswers": [
+        "Iteratively updates model parameters in the direction of negative gradient of the loss, using chain rule backpropagation.",
+        "Optimization technique computing gradients of the objective function with respect to parameters to minimize prediction error."
+      ],
+      "difficulty": 3,
+      "category": "Optimization",
+      "hint": "Think of hiking down a foggy mountain following the steepest slope, using derivatives to update weights."
+    },
+    {
+      "id": "ml_overfitting",
+      "deckId": "deck_ml_fundamentals",
+      "title": "Overfitting & Regularization",
+      "summary": "When a statistical model memorizes training noise instead of generalizable patterns; mitigated by Dropout, L1 Lasso, and L2 Ridge.",
+      "mnemonic": "High train accuracy, low test accuracy: penalize complexity with L1/L2 weights and Dropout.",
+      "keywords": ["overfitting", "regularization", "L1 Lasso", "L2 Ridge", "Dropout", "generalization gap", "variance", "weight decay"],
+      "acceptedAnswers": [
+        "Overfitting happens when a model learns training noise; solved by L1/L2 penalties, dropout, data augmentation, or early stopping.",
+        "High variance failure where model fits training data closely but fails on unseen validation sets, corrected by regularization."
+      ],
+      "difficulty": 2,
+      "category": "Training Dynamics",
+      "hint": "High training score but poor validation performance; fixed by weight decay, L1/L2 penalties, or dropout."
+    },
+    {
+      "id": "ml_transformer_attention",
+      "deckId": "deck_ml_fundamentals",
+      "title": "Transformer Self-Attention",
+      "summary": "Mechanism computing dynamic token-to-token compatibility weights using Query, Key, and Value dot products scaled by square root of head dimension.",
+      "mnemonic": "Softmax of (Q * K-transpose / sqrt(d_k)) multiplied by V: Queries seek matching Keys to blend Values.",
+      "keywords": ["Self-Attention", "Query", "Key", "Value", "Softmax", "scaled dot-product", "contextual representation", "multi-head"],
+      "acceptedAnswers": [
+        "Computes scaled dot products between queries and keys, applies softmax to get attention weights, and computes weighted sum over values.",
+        "Attention formula: softmax of Q times K transpose divided by square root of d_k, multiplied by V."
+      ],
+      "difficulty": 4,
+      "category": "Deep Learning",
+      "hint": "The formula involves Q, K, and V: Softmax(Q K^T / sqrt(d_k)) * V."
+    },
+    {
+      "id": "ml_cross_entropy",
+      "deckId": "deck_ml_fundamentals",
+      "title": "Cross-Entropy Loss",
+      "summary": "Measures performance of a classification model whose output is a probability distribution between 0 and 1 against true one-hot targets.",
+      "mnemonic": "-Sum(y_true * log(y_pred)): Harshly penalizes confident wrong predictions.",
+      "keywords": ["cross-entropy", "log loss", "probability distribution", "negative log likelihood", "softmax", "classification", "KL divergence"],
+      "acceptedAnswers": [
+        "Negative log likelihood of the true class probability, penalizing overconfident incorrect predictions logarithmically.",
+        "Loss function for classification computing the negative sum of true labels multiplied by log predicted probabilities."
+      ],
+      "difficulty": 3,
+      "category": "Loss Functions",
+      "hint": "Negative sum of y_true * log(y_pred); severely penalizes confident wrong classifications."
+    },
+    {
+      "id": "ml_precision_recall",
+      "deckId": "deck_ml_fundamentals",
+      "title": "Precision vs Recall & F1",
+      "summary": "Precision is TP/(TP+FP) measuring accuracy of positive calls; Recall is TP/(TP+FN) measuring coverage of actual positives; F1 is harmonic mean.",
+      "mnemonic": "Precision: Quality of positive calls. Recall: Quantity of actual targets caught. F1: Harmonic balance.",
+      "keywords": ["Precision", "Recall", "F1 score", "True Positives", "False Positives", "False Negatives", "harmonic mean", "trade-off"],
+      "acceptedAnswers": [
+        "Precision is true positives over total predicted positives; Recall is true positives over all actual positives; F1 balances both via harmonic mean.",
+        "Precision measures positive predictive value, Recall measures sensitivity or coverage, and F1 is their harmonic mean."
+      ],
+      "difficulty": 2,
+      "category": "Evaluation Metrics",
+      "hint": "Precision = TP/(TP+FP), Recall = TP/(TP+FN), F1 = 2*(P*R)/(P+R)."
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+﻿{
+    "claudeCode.maxEffortLevel":  "max",
+    "claudeCode.alwaysThinkingEnabled":  true,
+    "antigravity.maxThinkingTokens":  65536,
+    "antigravity.reasoningEffort":  "high",
+    "antigravity.swarm.defaultModel":  "claude-opus-4-6-thinking",
+    "antigravity.swarm.enabled":  true,
+    "antigravity.effortLevel":  "max",
+    "antigravity.useAiCredits":  true,
+    "claudeCode.effortLevel":  "max",
+    "antigravity.alwaysThinkingEnabled":  true
+}
