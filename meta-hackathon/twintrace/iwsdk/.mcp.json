@@ -53,6 +53,16 @@
 
                                                 },
                                         "command":  "npx"
-                                    }
+                                    },
+                       "chrome-devtools":  {
+                                               "args":  [
+                                                            "-y",
+                                                            "chrome-devtools-mcp@latest"
+                                                        ],
+                                               "env":  {
+
+                                                       },
+                                               "command":  "npx"
+                                           }
                    }
 }

@@ -359,7 +359,8 @@ function Ensure-McpServers {
         [pscustomobject]@{ Name = 'context7'; Args = @('mcp', 'add', 'context7', '--', 'npx', '-y', '@upstash/context7-mcp') },
         [pscustomobject]@{ Name = 'skillspector'; Args = @('mcp', 'add', 'skillspector', '--env', 'PYTHONIOENCODING=utf-8', '--env', 'PYTHONUNBUFFERED=1', '--', (Join-Path $UserHome 'AppData\Roaming\uv\tools\skillspector\Scripts\python.exe'), '-m', 'skillspector.cli', 'mcp') },
         [pscustomobject]@{ Name = 'magic'; Args = @('mcp', 'add', 'magic', '--', 'node', (Join-Path $AntigravityPlugins 'magic\dist\index.js')) },
-        [pscustomobject]@{ Name = 'wispr-flow'; Args = @('mcp', 'add', 'wispr-flow', '--url', 'https://api.wisprflow.ai/connect/mcp') }
+        [pscustomobject]@{ Name = 'wispr-flow'; Args = @('mcp', 'add', 'wispr-flow', '--url', 'https://api.wisprflow.ai/connect/mcp') },
+        [pscustomobject]@{ Name = 'chrome-devtools'; Args = @('mcp', 'add', 'chrome-devtools', '--', 'npx', '-y', 'chrome-devtools-mcp@latest') }
     )
     foreach ($entry in $commands) {
         if ($configured -contains $entry.Name) {

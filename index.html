@@ -78,6 +78,67 @@
       --canvas-node-bg: #ffffff;
     }
 
+    /* WCAG 2.1 AA Compliant Burnt Orange for Light Luxury Theme (>= 4.5:1 contrast against beige/sand) */
+    html[data-theme="luxury-beige"] .brand-badge,
+    body.light-theme .brand-badge {
+      color: #ffffff;
+      background: #9a3412;
+      border-color: #9a3412;
+    }
+
+    html[data-theme="luxury-beige"] .icon-btn.active,
+    body.light-theme .icon-btn.active {
+      color: #9a3412;
+      border-color: #9a3412;
+      background: rgba(154, 52, 18, 0.12);
+    }
+
+    html[data-theme="luxury-beige"] .vis-badge {
+      color: #9a3412;
+      background: rgba(154, 52, 18, 0.12);
+    }
+
+    html[data-theme="luxury-beige"] .eyebrow-pill {
+      color: #9a3412;
+    }
+
+    html[data-theme="luxury-beige"] .case-badge {
+      color: #9a3412;
+      background: rgba(154, 52, 18, 0.12);
+    }
+
+    html[data-theme="luxury-beige"] .case-btn.active {
+      color: #9a3412;
+    }
+
+    html[data-theme="luxury-beige"] .flagship-top-tag {
+      color: #9a3412;
+    }
+
+    html[data-theme="luxury-beige"] .story-num {
+      color: #9a3412;
+    }
+
+    html[data-theme="luxury-beige"] .rubric-pts {
+      color: #9a3412;
+    }
+
+    html[data-theme="luxury-beige"] .slide-eyebrow {
+      color: #9a3412;
+    }
+
+    html[data-theme="luxury-beige"] .total-num {
+      color: #9a3412;
+    }
+
+    html[data-theme="luxury-beige"] .drawer-tab.active {
+      color: #9a3412;
+    }
+
+    html[data-theme="luxury-beige"] .hero h1 .serif-accent {
+      color: #c2410c;
+    }
+
     /* Dark Theme: Deep Warm Espresso & Amber Charcoal */
     html[data-theme="warm-espresso"] {
       --bg-base: #14110e;
@@ -242,7 +303,8 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      height: 40px;
+      min-height: 44px;
+      min-width: 44px;
       padding: 0 14px;
       border-radius: var(--r-sm);
       border: 1px solid var(--border-subtle);
@@ -273,7 +335,8 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      height: 42px;
+      min-height: 44px;
+      min-width: 44px;
       padding: 0 20px;
       border-radius: var(--r-sm);
       font-size: 0.88rem;
@@ -286,13 +349,13 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent-orange), var(--accent-coral));
+      background: linear-gradient(135deg, #c2410c, #ea580c);
       color: #ffffff;
-      box-shadow: 0 4px 18px rgba(255, 87, 34, 0.32);
+      box-shadow: 0 4px 18px rgba(194, 65, 12, 0.35);
     }
 
     .btn-primary:hover {
-      box-shadow: 0 6px 24px rgba(255, 87, 34, 0.48);
+      box-shadow: 0 6px 24px rgba(194, 65, 12, 0.50);
       transform: translateY(-2px);
     }
 
@@ -508,7 +571,9 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-medium);
       color: var(--ink-secondary);
-      padding: 5px 10px;
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 12px;
       border-radius: var(--r-sm);
       font-size: 0.72rem;
       font-family: var(--font-mono);
@@ -516,6 +581,9 @@
       cursor: pointer;
       box-shadow: var(--shadow-soft);
       transition: all var(--spring-fast);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .canvas-ctrl-btn:hover {
@@ -588,6 +656,7 @@
     }
 
     .case-btn {
+      min-height: 44px;
       padding: 8px 16px;
       border-radius: 6px;
       font-size: 0.82rem;
@@ -699,7 +768,7 @@
        ========================================================================== */
     .flagship-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
       gap: 28px;
       margin-bottom: 64px;
     }
@@ -788,7 +857,7 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-medium);
       border-radius: var(--r-outer);
-      overflow: hidden;
+      overflow-x: auto;
       margin-bottom: 64px;
       box-shadow: var(--shadow-soft);
     }
@@ -954,7 +1023,9 @@
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
       color: var(--ink-secondary);
-      padding: 8px 14px;
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 16px;
       border-radius: var(--r-sm);
       font-size: 0.8rem;
       font-weight: 600;
@@ -962,6 +1033,7 @@
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
       transition: all var(--spring-fast);
     }
@@ -1041,8 +1113,10 @@
     }
 
     .drawer-close {
-      width: 36px;
-      height: 36px;
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
       border-radius: var(--r-sm);
       border: 1px solid var(--border-subtle);
       background: var(--bg-card);
@@ -1069,7 +1143,8 @@
     }
 
     .drawer-tab {
-      padding: 14px 0;
+      min-height: 44px;
+      padding: 12px 6px;
       font-size: 0.86rem;
       font-weight: 700;
       color: var(--ink-muted);
@@ -1078,6 +1153,9 @@
       cursor: pointer;
       position: relative;
       transition: color var(--spring-fast);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .drawer-tab.active {
@@ -2062,9 +2140,13 @@
         htmlElem.setAttribute('data-theme', theme);
         localStorage.setItem('twintrace_theme', theme);
         if (theme === 'warm-espresso') {
+          document.body.classList.add('dark-theme');
+          document.body.classList.remove('light-theme');
           themeIcon.textContent = '🌙';
           themeLabel.textContent = 'Warm Espresso';
         } else {
+          document.body.classList.add('light-theme');
+          document.body.classList.remove('dark-theme');
           themeIcon.textContent = '☀️';
           themeLabel.textContent = 'Oat & Sand';
         }

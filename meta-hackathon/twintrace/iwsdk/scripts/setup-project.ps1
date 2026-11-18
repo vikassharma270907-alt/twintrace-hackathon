@@ -256,6 +256,11 @@ function Configure-SingleProject {
                     "x-api-key" = "`${API_KEY_21ST}"
                 }
             }
+            "chrome-devtools" = @{
+                command = "npx"
+                args = @("-y", "chrome-devtools-mcp@latest")
+                env = @{}
+            }
         }
     }
     
@@ -322,6 +327,9 @@ function Configure-SingleProject {
             }
             if (-not $existingMcp.mcpServers.'21st') {
                 $existingMcp.mcpServers | Add-Member -MemberType NoteProperty -Name "21st" -Value $defaultMcp.mcpServers.'21st' -Force
+            }
+            if (-not $existingMcp.mcpServers.'chrome-devtools') {
+                $existingMcp.mcpServers | Add-Member -MemberType NoteProperty -Name "chrome-devtools" -Value $defaultMcp.mcpServers.'chrome-devtools' -Force
             }
             $existingMcp | ConvertTo-Json -Depth 6 | Set-Content -Path $mcpJsonPath -Encoding utf8
         } catch {}
@@ -548,7 +556,7 @@ jobs:
     Write-Host "  - NVIDIA SkillSpector: Active (71 vulnerability patterns, pre-install static vetting, semantic source review, skillspector MCP server)"
     Write-Host "  - Unslop Anti-Slop UI Craft: Active (/unslop, unslop, unslop-reviewer, unslop-designer, 8-pass redline craft engine)"
     Write-Host "  - Context7 Live Docs: Active (resolve-library-id, query-docs, ctx7 CLI, docs-researcher agent, auto-grounding for all libraries)"
-    Write-Host "  - MCP Servers: Active (.mcp.json configured with Figma, Laya, Context7, Magic, 21st & SkillSpector)"
+    Write-Host "  - MCP Servers: Active (.mcp.json configured with Chrome DevTools, Figma, Laya, Context7, Magic, 21st & SkillSpector)"
     Write-Host "  - Ralph Scaffolding: Active (scripts\ralph\ralph.ps1, ralph.sh)"
     Write-Host "  - CodeRabbit Config: Active (.coderabbit.yaml)"
     Write-Host "  - SessionStart Automation: Active (.agents\hooks.json)"
