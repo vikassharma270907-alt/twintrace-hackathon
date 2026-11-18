@@ -21,6 +21,11 @@ namespace RecallRoom.UI
         [SerializeField] private TMP_Text hintText;
         [SerializeField] private GameObject hintContainer;
 
+        [Header("Interactive Choice Fallback (Accessible Non-Speech)")]
+        [SerializeField] private GameObject choiceContainer;
+        [SerializeField] private UnityEngine.UI.Button[] choiceButtons;
+        [SerializeField] private TMP_Text[] choiceButtonTexts;
+
         [Header("Back Face Elements")]
         [SerializeField] private TMP_Text scoreBadgeText;
         [SerializeField] private TMP_Text transcriptText;
@@ -75,6 +80,50 @@ namespace RecallRoom.UI
             if (hintContainer != null)
             {
                 hintContainer.SetActive(isHintRevealed);
+            }
+        }
+
+        public void ShowRecallPrompt(bool hideAnswers, bool showChoices = false, string[] choiceOptions = null, System.Action<string> onChoiceSelected = null)
+        {
+            if (boundCard == null) return;
+
+            if (hideAnswers)
+            {
+                if (titleText != null) titleText.text = $"[Recall Target: {boundCard.Category}]";
+                if (summaryText != null) summaryText.text = "??? (Describe this spatial concept aloud or choose an option)";
+                if (mnemonicText != null) mnemonicText.text = $"<b>Cue:</b> {boundCard.Mnemonic}";
+            }
+            else
+            {
+                if (titleText != null) titleText.text = boundCard.Title;
+                if (summaryText != null) summaryText.text = boundCard.Summary;
+                if (mnemonicText != null) mnemonicText.text = $"<b>Mnemonic:</b> {boundCard.Mnemonic}";
+            }
+
+            if (choiceContainer != null)
+            {
+                choiceContainer.SetActive(showChoices && choiceOptions != null && choiceOptions.Length > 0);
+                if (showChoices && choiceButtons != null && choiceOptions != null)
+                {
+                    for (int i = 0; i < choiceButtons.Length; i++)
+                    {
+                        if (i < choiceOptions.Length)
+                        {
+                            choiceButtons[i].gameObject.SetActive(true);
+                            if (choiceButtonTexts != null && i < choiceButtonTexts.Length && choiceButtonTexts[i] != null)
+                            {
+                                choiceButtonTexts[i].text = choiceOptions[i];
+                            }
+                            string selectedOption = choiceOptions[i];
+                            choiceButtons[i].onClick.RemoveAllListeners();
+                            choiceButtons[i].onClick.AddListener(() => onChoiceSelected?.Invoke(selectedOption));
+                        }
+                        else
+                        {
+                            choiceButtons[i].gameObject.SetActive(false);
+                        }
+                    }
+                }
             }
         }
 

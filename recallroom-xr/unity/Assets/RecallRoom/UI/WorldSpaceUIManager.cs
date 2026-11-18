@@ -18,6 +18,7 @@ namespace RecallRoom.UI
         [Header("Subsystem References")]
         [SerializeField] private HUDController hudController;
         [SerializeField] private SessionSummaryView sessionSummaryView;
+        [SerializeField] private SettingsView settingsView;
         [SerializeField] private RoomSurfaceDetector surfaceDetector;
         [SerializeField] private MicCaptureController micController;
         [SerializeField] private RecallRoomApiClient apiClient;
@@ -210,13 +211,131 @@ namespace RecallRoom.UI
         private void FocusActiveCard(ConceptCardData activeCard)
         {
             if (activeCard == null) return;
+            bool isNonSpeech = settingsView != null && settingsView.IsNonSpeechMode;
+
+            foreach (var view in spawnedCardViews)
+            {
+                if (view.BoundCard != null)
+                {
+                    bool isActive = (view.BoundCard.Id == activeCard.Id);
+                    var anchor = view.GetComponent<SpatialCardAnchor>();
+                    if (anchor != null)
+                    {
+                        anchor.SetState(isActive ? CardAnchorState.ActiveRecall : CardAnchorState.Placed);
+                    }
+
+                    if (isActive)
+                    {
+                        string[] choiceOptions = null;
+                        if (isNonSpeech)
+                        {
+                            choiceOptions = GenerateChoiceOptions(activeCard);
+                        }
+                        view.ShowRecallPrompt(hideAnswers: true, showChoices: isNonSpeech, choiceOptions: choiceOptions, onChoiceSelected: SubmitActiveRecallChoice);
+                    }
+                    else
+                    {
+                        view.ShowRecallPrompt(hideAnswers: true, showChoices: false);
+                    }
+                }
+            }
+        }
+
+        private string[] GenerateChoiceOptions(ConceptCardData activeCard)
+        {
+            var options = new List<string>();
+            string correctAnswer = (activeCard.AcceptedAnswers != null && activeCard.AcceptedAnswers.Length > 0)
+                ? activeCard.AcceptedAnswers[0]
+                : activeCard.Summary;
+            options.Add(correctAnswer);
+
+            // Add 2 distractors from other cards in the deck
+            if (RecallStateManager.Instance != null && RecallStateManager.Instance.ActiveDeck != null)
+            {
+                foreach (var other in RecallStateManager.Instance.ActiveDeck.Cards)
+                {
+                    if (other.Id != activeCard.Id && options.Count < 3)
+                    {
+                        string distractor = (other.AcceptedAnswers != null && other.AcceptedAnswers.Length > 0)
+                            ? other.AcceptedAnswers[0]
+                            : other.Summary;
+                        if (!options.Contains(distractor)) options.Add(distractor);
+                    }
+                }
+            }
+
+            // Shuffle options
+            for (int i = 0; i < options.Count; i++)
+            {
+                int r = UnityEngine.Random.Range(i, options.Count);
+                string tmp = options[i];
+                options[i] = options[r];
+                options[r] = tmp;
+            }
+
+            return options.ToArray();
+        }
+
+        public async void SubmitActiveRecallChoice(string chosenText)
+        {
+            if (isEvaluating || RecallStateManager.Instance == null) return;
+            isEvaluating = true;
+
+            float latency = Time.time - recallStartTimestamp;
+            RecallStateManager.Instance.StartEvaluating();
+
+            var activeCard = RecallStateManager.Instance.ActiveCard;
+            bool hintUsed = false;
+            SpatialCardView activeView = null;
+
             foreach (var view in spawnedCardViews)
             {
                 if (view.BoundCard != null && view.BoundCard.Id == activeCard.Id)
                 {
-                    var anchor = view.GetComponent<SpatialCardAnchor>();
-                    if (anchor != null) anchor.SetState(CardAnchorState.ActiveRecall);
+                    activeView = view;
+                    hintUsed = view.IsHintRevealed;
+                    break;
                 }
+            }
+
+            EvaluateResponse evalResponse;
+            if (apiClient != null && !apiClient.ForceOfflineMode)
+            {
+                evalResponse = await apiClient.EvaluateRecallAsync(activeCard, chosenText, latency, hintUsed);
+            }
+            else
+            {
+                evalResponse = RecallRoomApiClient.EvaluateOfflineDeterministic(activeCard, chosenText, latency, hintUsed);
+            }
+
+            if (activeView != null)
+            {
+                activeView.DisplayFeedback(evalResponse, chosenText);
+            }
+
+            ReviewStatus status = ReviewStatus.RETRY;
+            if (evalResponse.status == "CORRECT") status = ReviewStatus.CORRECT;
+            else if (evalResponse.status == "PARTIAL") status = ReviewStatus.PARTIAL;
+
+            var result = new CardReviewResult(
+                activeCard.Id,
+                evalResponse.score,
+                status,
+                latency,
+                hintUsed,
+                chosenText,
+                evalResponse.feedback
+            );
+
+            RecallStateManager.Instance.DisplayFeedback(result);
+            isEvaluating = false;
+        }
+
+        public void OpenSettings()
+        {
+            if (settingsView != null)
+            {
+                settingsView.Show();
             }
         }
 

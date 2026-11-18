@@ -119,16 +119,27 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 The interactive API documentation is available at `http://localhost:8000/docs`.
 
-### 2. Running the Unity Mixed Reality Client
+### 2. Running the Interactive 3D WebXR Laboratory (Instant Browser Test)
+
+For evaluators and judges without an immediate physical Meta Quest headset attached:
+1. Open **`OPEN_ME.html`** or **`index.html`** directly in Chrome, Edge, or Meta Quest Browser.
+2. Full 3D interactive spatial room:
+   * Drag-and-drop spatial card placement on desktop; native WebXR Hand Tracking (`XRHand` pinch) on Quest.
+   * Real speech recognition via browser Web Speech API / mic capture + accessible multiple-choice buttons.
+   * Connects live to the FastAPI backend (`http://localhost:8000`), with transparent local fallback if offline.
+   * Full 10-state finite state machine and multi-factor adaptive spaced repetition queue.
+
+### 3. Running the Unity Mixed Reality Client
 
 1. Open **Unity Hub** and add the `unity/` folder using **Unity 2022.3 LTS** or **Unity 6**.
-2. In **Build Settings**, set the platform to **Android** with **ASTC** texture compression.
-3. Connect your Meta Quest 3 via USB-C with Developer Mode enabled.
-4. Verify ADB connectivity:
+2. Open `Assets/Scenes/RecallRoomMain.unity`.
+3. In **Build Settings**, set the platform to **Android** with **ASTC** texture compression.
+4. Connect your Meta Quest 3 via USB-C with Developer Mode enabled.
+5. Verify ADB connectivity:
    ```powershell
    adb devices
    ```
-5. Click **Build and Run** in Unity to deploy the APK to the headset.
+6. Click **Build and Run** in Unity to deploy the APK to the headset.
 
 ---
 

@@ -66,6 +66,30 @@ namespace RecallRoom.API
             }
         }
 
+        public async Task<bool> CheckHealthAsync()
+        {
+            if (forceOfflineMode) return false;
+            string url = $"{baseUrl.TrimEnd('/')}/health";
+            try
+            {
+                using (UnityWebRequest req = UnityWebRequest.Get(url))
+                {
+                    req.timeout = (int)requestTimeoutSeconds;
+                    var op = req.SendWebRequest();
+                    while (!op.isDone)
+                    {
+                        await Task.Yield();
+                    }
+                    return req.result == UnityWebRequest.Result.Success;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[RecallRoomApiClient] Health check failed: {ex.Message}");
+                return false;
+            }
+        }
+
         #region Transcribe Audio
 
         public async Task<string> TranscribeAudioAsync(byte[] wavBytes)

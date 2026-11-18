@@ -249,5 +249,57 @@ namespace RecallRoom.Tests
         }
 
         #endregion
+
+        #region XR Rig & Accessibility Tests
+
+        [Test]
+        public void XR_Bootstrap_InitializesSeatedEnvelopeWithinBounds()
+        {
+            var xrGo = new GameObject("XRBootstrap_Test");
+            var bootstrap = xrGo.AddComponent<RecallRoom.XR.XRBootstrap>();
+
+            bootstrap.InitializeXR();
+
+            Assert.IsTrue(bootstrap.IsInitialized);
+            Assert.IsTrue(bootstrap.SeatedMode);
+            Assert.GreaterOrEqual(bootstrap.MinReachDistance, 0.30f);
+            Assert.LessOrEqual(bootstrap.MaxReachDistance, 0.70f);
+
+            Object.DestroyImmediate(xrGo);
+        }
+
+        [Test]
+        public void XR_HandTracking_DetectsPinchAndRecoversGracefully()
+        {
+            var handGo = new GameObject("HandTracking_Test");
+            var handManager = handGo.AddComponent<RecallRoom.XR.HandTrackingManager>();
+            handManager.Initialize(handGo.transform);
+
+            bool pinchStarted = false;
+            handManager.OnPinchStarted += (hand, pos) => pinchStarted = true;
+
+            handManager.TriggerSimulatedPinchStart(RecallRoom.XR.HandType.Right, Vector3.forward);
+            Assert.IsTrue(pinchStarted);
+            Assert.IsTrue(handManager.IsPinching);
+
+            handManager.TriggerSimulatedPinchEnd(RecallRoom.XR.HandType.Right);
+            Assert.IsFalse(handManager.IsPinching);
+
+            Object.DestroyImmediate(handGo);
+        }
+
+        [Test]
+        public void Settings_AccessibilityOptions_ToggleSuccessfully()
+        {
+            var settingsGo = new GameObject("Settings_Test");
+            var settings = settingsGo.AddComponent<RecallRoom.UI.SettingsView>();
+
+            Assert.IsFalse(settings.IsNonSpeechMode);
+            Assert.IsFalse(settings.IsHighContrast);
+
+            Object.DestroyImmediate(settingsGo);
+        }
+
+        #endregion
     }
 }

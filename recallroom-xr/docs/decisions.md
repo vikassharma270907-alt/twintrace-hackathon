@@ -14,6 +14,8 @@ This document records the foundational architectural decisions made for **Recall
 * [ADR-006: Seated Ergonomics Envelope & Spatial Fitts's Law (0.35m – 0.60m Reach Zone)](#adr-006-seated-ergonomics-envelope)
 * [ADR-007: Deterministic Adaptive Spaced Repetition Formula & Priority Scheduling](#adr-007-deterministic-adaptive-spaced-repetition-formula)
 * [ADR-008: Zero-Data-Leak Privacy Boundary & Transient Audio Lifecycle](#adr-008-zero-data-leak-privacy-boundary)
+* [ADR-009: Accessible Non-Speech Interaction & Multi-Modal Recall Fallback](#adr-009-accessible-non-speech-interaction)
+* [ADR-010: Zero-Dependency WebXR & Desktop Simulation Laboratory](#adr-010-zero-dependency-webxr-and-desktop-simulation)
 
 ---
 
@@ -235,3 +237,49 @@ We establish a **Strict Zero-Data-Leak Privacy Architecture**:
   * Low risk profile: backend database stores only anonymous concept IDs and floating-point scores.
 * **Negative:**
   * Cannot retrospectively replay raw audio for pronunciation review unless client-side local caching is explicitly enabled by the user.
+
+---
+
+## ADR-009: Accessible Non-Speech Interaction
+
+### Status
+**Accepted**
+
+### Context
+While speech recognition provides natural, hands-free recall, learners in public environments, quiet libraries, shared dorm rooms, or with speech/vocal impairments require an equivalent high-accuracy learning experience without vocalization.
+
+### Decision
+We implement a **Dual-Modality Recall Engine**:
+1. Every concept card dynamically synthesizes three non-speech interactive choice targets (one canonical accepted answer + two distractors sampled from sibling cards in the active deck).
+2. Toggling Non-Speech Mode in the Settings spatial view activates these targets during Recall Mode.
+3. Interactive choices route through the identical semantic scoring and adaptive review queue logic, ensuring complete pedagogical and algorithmic parity.
+
+### Consequences
+* **Positive:**
+  * WCAG 2.1 AA and Section 508 accessibility compliance.
+  * Allows deep study in noise-sensitive environments (libraries, commuting).
+* **Negative:**
+  * Recognition testing slightly reduces the cognitive retrieval effort compared to unprompted free-form spoken recall.
+
+---
+
+## ADR-010: Zero-Dependency WebXR and Desktop Simulation
+
+### Status
+**Accepted**
+
+### Context
+Competition evaluators, academic reviewers, and remote collaborators often assess projects on desktop browsers or without an immediately available physical Meta Quest 3 developer-mode headset. Requiring an Android APK compilation step creates high evaluation friction.
+
+### Decision
+We ship a standalone **Zero-Dependency 3D WebXR and Desktop Simulation Laboratory (`OPEN_ME.html` / `index.html`)**:
+1. Built with pure client-side Three.js and WebGL.
+2. Supports native WebXR Hand Tracking (`immersive-vr`) on Meta Quest Browser, while simultaneously providing intuitive mouse/touch drag-and-drop interactions on desktop.
+3. Integrates live HTTP calls to the FastAPI backend (`http://localhost:8000/api/evaluate`) with transparent offline fallback to identical keyword and semantic scoring algorithms.
+
+### Consequences
+* **Positive:**
+  * Zero-friction evaluation: Judges can double-click `OPEN_ME.html` in Chrome or Edge and immediately test the entire spatial memory experience.
+  * Guarantees 100% testability across both headset and desktop hardware.
+* **Negative:**
+  * Does not exercise native Unity Android NDK binaries directly in the browser; verified independently via automated asset and backend test suites.

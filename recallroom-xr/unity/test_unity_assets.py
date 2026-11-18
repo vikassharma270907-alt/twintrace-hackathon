@@ -26,13 +26,18 @@ def run_tests():
         r"Assets\RecallRoom\Spatial\TabletopFallbackManager.cs",
         r"Assets\RecallRoom\Interaction\HandGrabHandler.cs",
         r"Assets\RecallRoom\Interaction\PinchTarget.cs",
+        r"Assets\RecallRoom\XR\XRBootstrap.cs",
+        r"Assets\RecallRoom\XR\HandTrackingManager.cs",
+        r"Assets\RecallRoom\XR\XRSimulatorFallback.cs",
         r"Assets\RecallRoom\Learning\AdaptiveScheduler.cs",
         r"Assets\RecallRoom\API\RecallRoomApiClient.cs",
         r"Assets\RecallRoom\Audio\MicCaptureController.cs",
         r"Assets\RecallRoom\UI\SpatialCardView.cs",
         r"Assets\RecallRoom\UI\HUDController.cs",
         r"Assets\RecallRoom\UI\SessionSummaryView.cs",
+        r"Assets\RecallRoom\UI\SettingsView.cs",
         r"Assets\RecallRoom\UI\WorldSpaceUIManager.cs",
+        r"Assets\Scenes\RecallRoomMain.unity",
         r"Assets\RecallRoom\Tests\RecallRoom.Tests.asmdef",
         r"Assets\RecallRoom\Tests\RecallRoomTests.cs"
     ]
