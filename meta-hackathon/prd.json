@@ -1,0 +1,104 @@
+{
+  "project": "Split Lab VR (Twin Trace)",
+  "competition": "Meta VR Start Developer Competition 2026",
+  "track": "Productivity",
+  "division": "New Experience",
+  "version": "1.0.0",
+  "status": "Production / Judge-Ready",
+  "description": "A hands-first data-leakage workshop for junior ML engineers preparing for model reviews, built for Meta Quest using Meta IWSDK and WebXR.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Deterministic 1-NN Classifier and Group Leakage Simulation",
+      "status": "passed",
+      "acceptanceCriteria": [
+        "1-Nearest Neighbor classifier with squared Euclidean distance across 6 continuous features.",
+        "Deterministic data generation across seeds 0-29 matching published research table.",
+        "Leaky split produces 100.0% evaluation accuracy; clean disjoint split produces ~47.5% accuracy.",
+        "Audit tray (60 unseen groups) maintains ~50% chance baseline under both conditions.",
+        "Automated Node.js unit tests pass with 100% assertion coverage."
+      ],
+      "verificationCommand": "node twintrace/tests/model.test.mjs"
+    },
+    {
+      "id": "US-002",
+      "title": "Hands-First 3D Spatial Specimen Viewer and Connector Ray",
+      "status": "passed",
+      "acceptanceCriteria": [
+        "Interactive rotatable 3D canvas displaying 6D feature projection.",
+        "Pinch gesture illuminates 3D trajectory connecting test specimen to its training twin.",
+        "Training and evaluation trays positioned within seated reach envelope (0.35m - 0.60m).",
+        "Keyboard (Arrow keys) and mouse drag support as desktop fallback."
+      ],
+      "verificationCommand": "python qa_twintrace.py"
+    },
+    {
+      "id": "US-003",
+      "title": "Group Disjointness Repair and Ledger Updates",
+      "status": "passed",
+      "acceptanceCriteria": [
+        "Quarantine gesture evicts all 40 matching training twins and replaces them with 40 reserve groups.",
+        "Ledger immediately recalculates evaluation accuracy from 100.0% to 47.5%.",
+        "Overlap count drops from 40 to 0 while total training size remains strictly 120 items.",
+        "Stage transitions are strictly ordered and idempotent."
+      ],
+      "verificationCommand": "node twintrace/tests/model.test.mjs"
+    },
+    {
+      "id": "US-004",
+      "title": "Sealed Blind Audit Tray and Review Decision Engine",
+      "status": "passed",
+      "acceptanceCriteria": [
+        "Audit tray remains completely sealed until player commits to a repair or verdict.",
+        "Unsealing audit reveals true generalization score (18/60, 30.0%).",
+        "Player chooses between 'Hold Release' and 'Approve Release'.",
+        "Session persists state in localStorage and safely rehydrates upon page reload or headset removal."
+      ],
+      "verificationCommand": "python qa_twintrace.py"
+    },
+    {
+      "id": "US-005",
+      "title": "Control Case for Disjoint Look-Alike Validation",
+      "status": "passed",
+      "acceptanceCriteria": [
+        "Case 2 loads a clean model where nearest neighbor has distinct origin group ID.",
+        "Confirming split keeps 90.0% accuracy; audit tray validates at 57/60 (95.0%).",
+        "Player passes review by choosing 'Approve Release'.",
+        "Session cleanly wraps around to Case 1 upon completion."
+      ],
+      "verificationCommand": "node twintrace/tests/model.test.mjs"
+    },
+    {
+      "id": "US-006",
+      "title": "Meta IWSDK and WebXR Standalone Quest Deployment",
+      "status": "passed",
+      "acceptanceCriteria": [
+        "Meta IWSDK package uses @iwsdk/core 1.0.1 and super-three.",
+        "Scene implements OneHandGrabbable, RayInteractable, and PokeInteractable components.",
+        "Deployment configurations for Vercel and Netlify enforce WebXR Permissions-Policy and COOP/COEP headers.",
+        "Touch targets meet 44px minimum and dark mode color scheme is supported."
+      ],
+      "verificationCommand": "npm run qa"
+    },
+    {
+      "id": "US-007",
+      "title": "Spaced Repetition Practice Scheduler via Half-Life Regression",
+      "status": "backlog",
+      "acceptanceCriteria": [
+        "Implement Settles & Meeder Half-Life Regression model for retention estimation.",
+        "Log elapsed time, mistake rates, and inspection duration per concept.",
+        "Dynamically select next review case based on predicted memory decay threshold."
+      ]
+    },
+    {
+      "id": "US-008",
+      "title": "Feature Selection Pre-Split Leakage Workshop Module",
+      "status": "backlog",
+      "acceptanceCriteria": [
+        "Implement second workshop scenario based on scikit-learn feature selection leakage pitfall.",
+        "Allow developer to physically toggle between 'Select features before split' vs 'Select features after split'.",
+        "Demonstrate false correlation discovery on purely random synthetic noise."
+      ]
+    }
+  ]
+}
