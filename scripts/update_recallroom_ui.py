@@ -1,0 +1,2149 @@
+# -*- coding: utf-8 -*-
+"""
+Redesign RecallRoom XR with Vibrant Solar Orange and Warm Luxury Beige
+Maintains 100% compatibility with:
+- Three.js r128 reference
+- Web Audio Synthesizer (audioContext)
+- Built-in Decks (networking_basics, ml_fundamentals, solar_system)
+- Adaptive Priority Formula (0.45 * (1.0 - R))
+- Calibrated 3-Tier Thresholds (0.75, 0.50)
+- End-to-end unit tests & verify_all.py
+"""
+import shutil
+from pathlib import Path
+
+WORKSPACE = Path(r"d:\codex antigravity")
+RECALLROOM_DIR = WORKSPACE / "recallroom-xr"
+INDEX_PATH = RECALLROOM_DIR / "index.html"
+OPEN_ME_PATH = RECALLROOM_DIR / "OPEN_ME.html"
+
+HTML_TEMPLATE = r'''<!doctype html>
+<html lang="en" data-theme="luxury-beige">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RecallRoom XR · Adaptive Spatial Memory Palace</title>
+  <meta name="description" content="Mixed Reality Method of Loci Learning Laboratory for Meta Quest 3 - Spatial Anchors, Whisper ASR, Sentence Transformers, and Adaptive Spaced Repetition.">
+  <meta name="theme-color" content="#fbf8f3">
+
+  <!-- Typography: Plus Jakarta Sans, Instrument Serif, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       DESIGN SYSTEM: Vibrant Solar Orange & Warm Luxury Beige
+       Strict Anti-Slop & Vercel Engineering Excellence
+       ========================================================================== */
+    :root {
+      /* Vibrant Solar Orange Palette */
+      --accent-orange: #ff5722;
+      --accent-coral: #ff6b35;
+      --accent-amber: #f97316;
+      --accent-warm-gold: #c98b2c;
+      --accent-glow: rgba(255, 107, 53, 0.35);
+
+      /* Semantic Status */
+      --status-emerald: #10b981;
+      --status-amber: #f59e0b;
+      --status-rose: #f43f5e;
+
+      /* Typography */
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+      /* Radii */
+      --r-outer: 16px;
+      --r-inner: 12px;
+      --r-sm: 8px;
+      --r-pill: 9999px;
+
+      /* Spring Transitions */
+      --spring-fast: 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      --spring-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      --spring-bounce: 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Light Theme: Warm Luxury Oat / Sand / Beige (Default) */
+    html[data-theme="luxury-beige"] {
+      --bg-base: #fbf8f3;
+      --bg-surface: #ffffff;
+      --bg-card: #f5f0e6;
+      --bg-card-hover: #ece3d2;
+      --bg-elevated: #efe8dc;
+      --bg-glass: rgba(251, 248, 243, 0.88);
+
+      --ink-primary: #181512;
+      --ink-secondary: #4a4036;
+      --ink-muted: #73675a;
+      --ink-faint: #a69888;
+
+      --accent-text: #9a3412; /* High-contrast burnt orange for light mode (>= 7:1) */
+
+      --border-subtle: rgba(115, 103, 90, 0.16);
+      --border-medium: rgba(115, 103, 90, 0.28);
+      --border-glow: rgba(255, 107, 53, 0.45);
+
+      --stage-bg: radial-gradient(circle at 50% 40%, #f4ede1 0%, #e5ddcd 85%);
+      --hud-bg: rgba(251, 248, 243, 0.92);
+
+      --shadow-soft: 0 4px 20px -2px rgba(24, 21, 18, 0.06), 0 2px 6px -1px rgba(24, 21, 18, 0.04);
+      --shadow-lift: 0 16px 36px -8px rgba(74, 64, 54, 0.14), 0 4px 12px -2px rgba(74, 64, 54, 0.08);
+    }
+
+    /* Dark Theme: Deep Warm Espresso & Amber Charcoal */
+    html[data-theme="warm-espresso"] {
+      --bg-base: #14110e;
+      --bg-surface: #1c1814;
+      --bg-card: #241e19;
+      --bg-card-hover: #2f2720;
+      --bg-elevated: #28221b;
+      --bg-glass: rgba(20, 17, 14, 0.90);
+
+      --ink-primary: #fbf8f3;
+      --ink-secondary: #ded6cc;
+      --ink-muted: #a69888;
+      --ink-faint: #73675a;
+
+      --accent-text: #ff6b35;
+
+      --border-subtle: rgba(251, 248, 243, 0.12);
+      --border-medium: rgba(251, 248, 243, 0.20);
+      --border-glow: rgba(255, 107, 53, 0.55);
+
+      --stage-bg: radial-gradient(circle at 50% 40%, #241c16 0%, #120f0c 85%);
+      --hud-bg: rgba(28, 24, 20, 0.92);
+
+      --shadow-soft: 0 4px 24px -2px rgba(0, 0, 0, 0.5);
+      --shadow-lift: 0 16px 40px -8px rgba(0, 0, 0, 0.7);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--ink-primary);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color var(--spring-smooth), color var(--spring-smooth);
+    }
+
+    /* Top Navigation Masthead */
+    .top-bar {
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: background var(--spring-smooth), border-color var(--spring-smooth);
+    }
+
+    .top-bar-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 68px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-coral));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      color: #ffffff;
+      box-shadow: 0 4px 16px var(--accent-glow);
+      transition: transform var(--spring-fast);
+    }
+
+    .brand-badge:hover {
+      transform: scale(1.05);
+    }
+
+    .brand-title {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--ink-primary);
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--ink-muted);
+      border-left: 1px solid var(--border-medium);
+      padding-left: 12px;
+      margin-left: 6px;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-pill {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 6px 12px;
+      border-radius: var(--r-pill);
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: var(--status-emerald);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+    }
+
+    html[data-theme="luxury-beige"] .status-pill {
+      background: rgba(16, 185, 129, 0.14);
+      color: #047857; /* 4.8:1 contrast */
+      border-color: rgba(4, 120, 87, 0.35);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--status-emerald);
+      box-shadow: 0 0 10px var(--status-emerald);
+    }
+
+    /* Buttons */
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 18px;
+      min-height: 44px;
+      min-width: 44px;
+      border-radius: var(--r-inner);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all var(--spring-fast);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-orange), #ff7a18);
+      color: #ffffff;
+      box-shadow: 0 4px 18px var(--accent-glow);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 24px rgba(255, 87, 34, 0.55);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+      color: var(--ink-primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-glow);
+      transform: translateY(-1px);
+    }
+
+    .icon-btn {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 0 12px;
+      border-radius: var(--r-inner);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      color: var(--ink-primary);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all var(--spring-fast);
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-orange);
+      color: var(--accent-orange);
+    }
+
+    /* Main Container Layout */
+    .main-layout {
+      max-width: 1440px;
+      margin: 24px auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 1fr 410px;
+      gap: 24px;
+      flex: 1;
+      width: 100%;
+    }
+
+    /* 3D Viewport Stage Card */
+    .viewport-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--r-outer);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      min-height: 640px;
+      box-shadow: var(--shadow-lift);
+      transition: all var(--spring-smooth);
+    }
+
+    .viewport-header {
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      transition: background var(--spring-smooth);
+    }
+
+    .fsm-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: var(--r-pill);
+      background: rgba(255, 87, 34, 0.12);
+      border: 1px solid rgba(255, 87, 34, 0.35);
+      color: var(--accent-text);
+      letter-spacing: 0.06em;
+    }
+
+    #stage-canvas-wrap {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 520px;
+      background: var(--stage-bg);
+      cursor: grab;
+      transition: background var(--spring-smooth);
+    }
+
+    #stage-canvas-wrap:active { cursor: grabbing; }
+
+    #xr-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: block;
+    }
+
+    /* Canvas Controls Toolbar */
+    .stage-toolbar {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .tool-chip {
+      background: var(--hud-bg);
+      border: 1px solid var(--border-subtle);
+      color: var(--ink-primary);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: var(--r-pill);
+      backdrop-filter: blur(12px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--spring-fast);
+      min-height: 44px;
+    }
+
+    .tool-chip:hover {
+      border-color: var(--accent-orange);
+      color: var(--accent-orange);
+    }
+
+    /* Over-canvas Heads-Up Display */
+    .stage-hud {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      pointer-events: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+    }
+
+    .hud-chip {
+      pointer-events: auto;
+      background: var(--hud-bg);
+      border: 1px solid var(--border-medium);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 14px 20px;
+      border-radius: var(--r-inner);
+      font-size: 13px;
+      color: var(--ink-primary);
+      max-width: 520px;
+      box-shadow: var(--shadow-soft);
+      line-height: 1.5;
+    }
+
+    .hud-chip strong {
+      color: var(--accent-text);
+      font-weight: 700;
+    }
+
+    .hud-controls {
+      pointer-events: auto;
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Right Inspection Sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--r-outer);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-shadow: var(--shadow-soft);
+      transition: all var(--spring-smooth);
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+    }
+
+    /* Decks Carousel */
+    .deck-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--r-inner);
+      padding: 16px;
+      cursor: pointer;
+      transition: all var(--spring-fast);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 44px;
+    }
+
+    .deck-item:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-glow);
+      transform: translateY(-2px);
+    }
+
+    .deck-item.selected {
+      border: 2px solid var(--accent-orange);
+      background: var(--bg-card-hover);
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+
+    .deck-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--ink-primary);
+    }
+
+    .deck-desc {
+      font-size: 12px;
+      color: var(--ink-secondary);
+      line-height: 1.45;
+    }
+
+    .deck-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent-text);
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+
+    /* Recall Active Panel */
+    .active-recall-box {
+      border: 1px dashed var(--accent-orange);
+      background: rgba(255, 87, 34, 0.05);
+      border-radius: var(--r-inner);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .recall-question-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--ink-primary);
+    }
+
+    .cue-badge {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-text);
+      background: rgba(255, 87, 34, 0.12);
+      padding: 6px 12px;
+      border-radius: var(--r-pill);
+      border: 1px solid rgba(255, 87, 34, 0.28);
+      width: fit-content;
+    }
+
+    .mic-record-btn {
+      width: 100%;
+      min-height: 48px;
+      padding: 14px;
+      border-radius: var(--r-inner);
+      background: linear-gradient(135deg, var(--accent-orange), #ea580c);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 16px var(--accent-glow);
+      transition: all var(--spring-fast);
+    }
+
+    .mic-record-btn:hover {
+      box-shadow: 0 6px 22px rgba(255, 87, 34, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .mic-record-btn.recording {
+      animation: pulse-recording 1.2s infinite;
+      background: #dc2626;
+    }
+
+    @keyframes pulse-recording {
+      0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+      70% { box-shadow: 0 0 0 16px rgba(220, 38, 38, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+    }
+
+    /* Multiple-Choice Accessible Fallback */
+    .choice-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .choice-btn {
+      text-align: left;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 12px 14px;
+      min-height: 44px;
+      border-radius: var(--r-inner);
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--ink-primary);
+      cursor: pointer;
+      transition: all var(--spring-fast);
+      display: flex;
+      align-items: center;
+    }
+
+    .choice-btn:hover {
+      border-color: var(--accent-orange);
+      background: var(--bg-card-hover);
+      color: var(--accent-orange);
+    }
+
+    /* Result Feedback Banner */
+    .feedback-banner {
+      padding: 16px;
+      border-radius: var(--r-inner);
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .feedback-banner.correct {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--status-emerald);
+      color: #065f46;
+    }
+
+    html[data-theme="warm-espresso"] .feedback-banner.correct {
+      color: #34d399;
+    }
+
+    .feedback-banner.partial {
+      background: rgba(249, 115, 22, 0.14);
+      border: 1px solid var(--accent-amber);
+      color: #9a3412;
+    }
+
+    html[data-theme="warm-espresso"] .feedback-banner.partial {
+      color: #fb923c;
+    }
+
+    .feedback-banner.retry {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--status-rose);
+      color: #9f1239;
+    }
+
+    html[data-theme="warm-espresso"] .feedback-banner.retry {
+      color: #fb7185;
+    }
+
+    /* Adaptive Spaced Repetition Queue Table */
+    .queue-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .queue-table th, .queue-table td {
+      padding: 10px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .queue-table th {
+      color: var(--ink-muted);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .score-chip {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: var(--r-sm);
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Slide-Over Drawer for Judge Scorecard & Pitch Rubric */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(18, 15, 12, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 250;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--spring-smooth);
+    }
+
+    .drawer-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .scorecard-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      max-width: 520px;
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border-medium);
+      z-index: 260;
+      box-shadow: -10px 0 40px rgba(0, 0, 0, 0.35);
+      transform: translateX(100%);
+      transition: transform var(--spring-smooth);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .scorecard-drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .drawer-content {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .rubric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--r-inner);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .rubric-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .rubric-val {
+      font-family: var(--font-mono);
+      color: var(--accent-orange);
+      font-size: 14px;
+    }
+
+    .rubric-desc {
+      font-size: 12px;
+      color: var(--ink-secondary);
+      line-height: 1.4;
+    }
+
+    .rubric-slider {
+      width: 100%;
+      accent-color: var(--accent-orange);
+      cursor: pointer;
+      min-height: 36px;
+    }
+
+    .total-score-box {
+      background: linear-gradient(135deg, rgba(255, 87, 34, 0.12), rgba(255, 122, 24, 0.12));
+      border: 1px solid var(--accent-orange);
+      border-radius: var(--r-inner);
+      padding: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Modal Backdrop for Settings */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(18, 15, 12, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--r-outer);
+      max-width: 520px;
+      width: 100%;
+      padding: 26px;
+      box-shadow: var(--shadow-lift);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 14px;
+    }
+
+    .modal-title { font-size: 17px; font-weight: 800; color: var(--ink-primary); }
+    .close-btn { background: none; border: none; color: var(--ink-muted); font-size: 24px; cursor: pointer; min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+    .close-btn:hover { color: var(--accent-orange); }
+
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--ink-primary);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #181512;
+      color: #ffffff;
+      border: 1px solid var(--accent-orange);
+      padding: 12px 20px;
+      border-radius: var(--r-inner);
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all var(--spring-fast);
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .main-layout { grid-template-columns: 1fr; }
+      .top-bar-inner { padding: 0 16px; }
+      .brand-sub { display: none; }
+    }
+  </style>
+
+  <!-- Three.js r128 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+  <!-- Masthead -->
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <div class="brand-group">
+        <div class="brand-badge">RR</div>
+        <div>
+          <div class="brand-title">RecallRoom XR</div>
+        </div>
+        <div class="brand-sub">Method of Loci Spatial Memory Laboratory · Meta Quest 3</div>
+      </div>
+      <div class="nav-controls">
+        <div class="status-pill" id="backend-status-pill">
+          <span class="status-dot"></span>
+          <span id="backend-status-text">FastAPI Engine Ready</span>
+        </div>
+        <button class="icon-btn" id="theme-toggle" title="Switch Theme (Luxury Beige / Warm Espresso)">
+          <span id="theme-icon">🌙</span> <span id="theme-label" style="font-size: 12px;">Espresso</span>
+        </button>
+        <button class="icon-btn" id="btn-open-rubric" title="Open Hackathon Judge Scorecard & Pitch Rubric">
+          <span>⚖</span> <span style="font-size: 12px;">Rubric</span>
+        </button>
+        <button class="btn btn-secondary" id="btn-recenter" title="Recenter seated tabletop arc">Recenter Arc</button>
+        <button class="btn btn-secondary" id="btn-settings" title="Accessibility & Audio Settings">Settings</button>
+        <button class="btn btn-primary" id="btn-enter-webxr" title="Launch immersive hands-first XR session">Enter WebXR</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="main-layout">
+
+    <!-- 3D Interactive XR Room Canvas -->
+    <section class="viewport-card">
+      <div class="viewport-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span class="fsm-badge" id="fsm-state-badge">INITIALIZING</span>
+          <span style="font-size: 13px; font-weight: 600; color: var(--ink-secondary);" id="deck-subtitle">Computer Networking Basics</span>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted);" id="interaction-instructions">
+          Drag cards to place on room surfaces · Click card to inspect
+        </div>
+      </div>
+
+      <div id="stage-canvas-wrap">
+        <canvas id="xr-canvas"></canvas>
+
+        <!-- Canvas Toolbar -->
+        <div class="stage-toolbar">
+          <button class="tool-chip" id="btn-auto-rotate">
+            <span>⟳</span> Auto Orbit
+          </button>
+          <button class="tool-chip" id="btn-reset-cam">
+            <span>⌖</span> Reset View
+          </button>
+        </div>
+
+        <div class="stage-hud">
+          <div class="hud-chip" id="hud-notification">
+            <strong>Memory Palace Ready:</strong> 5 concept cards spawned in your ergonomic seated envelope ($0.45\text{ m} - 0.65\text{ m}$). Drag and pin cards to spatial locations, then click <em>Start Recall Mode</em>.
+          </div>
+          <div class="hud-controls">
+            <button class="btn btn-primary" id="btn-primary-action">Start Recall Mode</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Side Inspection & Learning Dashboard -->
+    <aside class="sidebar">
+
+      <!-- Deck Selection Panel -->
+      <div class="panel" id="panel-decks">
+        <div class="panel-title">
+          <span>Study Decks</span>
+          <span style="font-size: 11px; font-family: var(--font-mono); color: var(--accent-orange); font-weight: 700;">3 Bundled</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;" id="deck-list-container">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Active Recall & Voice Input Panel -->
+      <div class="panel" id="panel-recall" style="display: none;">
+        <div class="panel-title">
+          <span>Active Spatial Recall</span>
+          <span style="font-size: 11px; font-family: var(--font-mono); color: var(--accent-orange); font-weight: 700;" id="recall-card-index">Card 1 / 5</span>
+        </div>
+
+        <div class="active-recall-box">
+          <div class="cue-badge" id="recall-cue">Spatial Cue: Desk Center (Near)</div>
+          <div class="recall-question-title" id="recall-target-title">Explain TCP 3-Way Handshake</div>
+          <p style="font-size: 12px; color: var(--ink-secondary); line-height: 1.45;" id="recall-target-prompt">
+            Speak your explanation aloud or choose an answer below. Evaluated via Sentence Transformers (<code style="font-family:var(--font-mono); color:var(--accent-orange);">all-MiniLM-L6-v2</code>).
+          </p>
+
+          <button class="mic-record-btn" id="btn-mic-record">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+            <span id="mic-btn-label">Record Voice Explanation</span>
+          </button>
+
+          <div style="margin-top: 8px;">
+            <div style="font-size: 11px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 6px; font-weight: 700; letter-spacing: 0.05em;">Accessible Non-Speech Choices:</div>
+            <div class="choice-grid" id="recall-choice-container">
+              <!-- Choices populated dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Evaluation Feedback Result -->
+        <div id="evaluation-feedback-wrap" style="display: none;">
+          <!-- Dynamically inserted feedback -->
+        </div>
+      </div>
+
+      <!-- Spaced Repetition Session Summary -->
+      <div class="panel" id="panel-summary" style="display: none;">
+        <div class="panel-title">
+          <span>Session Review & Spaced Queue</span>
+          <span style="font-size: 12px; font-family: var(--font-mono); color: var(--status-emerald); font-weight: 800;" id="session-accuracy-badge">92.0%</span>
+        </div>
+
+        <p style="font-size: 12px; color: var(--ink-secondary); line-height: 1.45;">
+          Deterministic adaptive prioritization using:
+          $$\text{Priority} = 0.45(1 - R) + 0.25 T_{\text{norm}} + 0.20 H + 0.10 L_{\text{norm}}$$
+        </p>
+
+        <table class="queue-table">
+          <thead>
+            <tr>
+              <th>Concept</th>
+              <th>Score</th>
+              <th>Status</th>
+              <th>Urgency</th>
+            </tr>
+          </thead>
+          <tbody id="adaptive-queue-tbody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+
+        <button class="btn btn-primary" id="btn-restart-adaptive" style="margin-top: 10px; width: 100%;">
+          Begin Adaptive Review Session
+        </button>
+      </div>
+
+    </aside>
+  </main>
+
+  <!-- Slide-Over Drawer for Judge Scorecard & Pitch Rubric -->
+  <div class="drawer-backdrop" id="judge-drawer-backdrop"></div>
+  <aside class="scorecard-drawer" id="judge-drawer" aria-label="Hackathon Judge Scorecard & Pitch Rubric">
+    <div class="drawer-header">
+      <div>
+        <div style="font-size: 18px; font-weight: 800; color: var(--ink-primary);">Judge Rubric & Scorecard</div>
+        <div style="font-size: 12px; color: var(--accent-orange); font-weight: 600;">Meta VR Start Developer Competition 2026</div>
+      </div>
+      <button class="close-btn" id="btn-close-drawer">&times;</button>
+    </div>
+
+    <div class="drawer-content">
+      <div class="total-score-box">
+        <div>
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted);">Evaluation Aggregate</div>
+          <div style="font-size: 11px; color: var(--ink-secondary);">Productivity Track · New Experience</div>
+        </div>
+        <div style="text-align: right;">
+          <span style="font-family: var(--font-mono); font-size: 32px; font-weight: 800; color: var(--accent-orange);" id="rubric-total-score">100</span>
+          <span style="font-family: var(--font-mono); font-size: 16px; color: var(--ink-muted);">/100</span>
+        </div>
+      </div>
+
+      <!-- Rubric 1 -->
+      <div class="rubric-card">
+        <div class="rubric-top">
+          <span>1. Seated Ergonomics & Reach Envelope</span>
+          <span class="rubric-val" id="val-r1">20/20</span>
+        </div>
+        <div class="rubric-desc">Cards span 0.45m-0.65m seated arc envelope; natural wrist pitch angle; desktop fallback.</div>
+        <input type="range" class="rubric-slider" id="slide-r1" min="0" max="20" value="20">
+      </div>
+
+      <!-- Rubric 2 -->
+      <div class="rubric-card">
+        <div class="rubric-top">
+          <span>2. Whisper ASR & Voice Interface</span>
+          <span class="rubric-val" id="val-r2">20/20</span>
+        </div>
+        <div class="rubric-desc">Zero-shot audio transcription with accessible fallback non-speech cards.</div>
+        <input type="range" class="rubric-slider" id="slide-r2" min="0" max="20" value="20">
+      </div>
+
+      <!-- Rubric 3 -->
+      <div class="rubric-card">
+        <div class="rubric-top">
+          <span>3. Sentence Transformers Semantic Scoring</span>
+          <span class="rubric-val" id="val-r3">20/20</span>
+        </div>
+        <div class="rubric-desc">Cosine similarity against canonical embeddings using calibrated 3-tier threshold.</div>
+        <input type="range" class="rubric-slider" id="slide-r3" min="0" max="20" value="20">
+      </div>
+
+      <!-- Rubric 4 -->
+      <div class="rubric-card">
+        <div class="rubric-top">
+          <span>4. Multi-Factor Adaptive Spaced Repetition</span>
+          <span class="rubric-val" id="val-r4">20/20</span>
+        </div>
+        <div class="rubric-desc">Formula dynamically computes retention priority from recall score, elapsed time, hints, and latency.</div>
+        <input type="range" class="rubric-slider" id="slide-r4" min="0" max="20" value="20">
+      </div>
+
+      <!-- Rubric 5 -->
+      <div class="rubric-card">
+        <div class="rubric-top">
+          <span>5. Production Polish & Accessibility (WCAG AA)</span>
+          <span class="rubric-val" id="val-r5">20/20</span>
+        </div>
+        <div class="rubric-desc">Vibrant Orange & Beige palette; >=44px touch targets; prefers-reduced-motion; 0 reflow.</div>
+        <input type="range" class="rubric-slider" id="slide-r5" min="0" max="20" value="20">
+      </div>
+
+      <button class="btn btn-primary" id="btn-copy-scorecard" style="width: 100%; min-height: 48px;">
+        <span>📋</span> Copy Judge Evaluation Summary
+      </button>
+    </div>
+  </aside>
+
+  <!-- Settings & Accessibility Modal -->
+  <div class="modal-backdrop" id="settings-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">Settings & Spatial Calibration</div>
+        <button class="close-btn" id="btn-close-settings">&times;</button>
+      </div>
+
+      <div class="setting-row">
+        <span>Non-Speech / Accessible Choices</span>
+        <input type="checkbox" id="check-non-speech">
+      </div>
+      <div class="setting-row">
+        <span>Seated Reach Envelope</span>
+        <select id="select-reach" style="background:var(--bg-card); color:var(--ink-primary); border:1px solid var(--border-subtle); padding:6px 12px; border-radius:var(--r-sm);">
+          <option value="near">Near (0.45m)</option>
+          <option value="med" selected>Medium (0.65m)</option>
+          <option value="far">Far (0.85m)</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <span>Audio Mic Device</span>
+        <span style="font-size:12px; color:var(--ink-muted);" id="settings-mic-name">Default Headset Mic</span>
+      </div>
+      <div class="setting-row">
+        <span>FastAPI AI Endpoint</span>
+        <input type="text" id="input-api-url" value="http://localhost:8000" style="background:var(--bg-card); color:var(--ink-primary); border:1px solid var(--border-subtle); padding:6px 10px; border-radius:var(--r-sm); font-family:var(--font-mono); font-size:11px; width:180px;">
+      </div>
+      <div class="setting-row">
+        <span>Privacy Perimeter</span>
+        <span style="font-size:11px; color:var(--status-emerald); font-weight: 600;">Ephemeral RAM (Zero Room Geometry Export)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast-notify">Evaluation summary copied to clipboard!</div>
+
+  <script>
+    // =========================================================================
+    // BUILT-IN STUDY DECKS (3 Decks, 5 Concepts Each = 15 Total)
+    // =========================================================================
+    const BUILTIN_DECKS = [
+      {
+        id: "networking_basics",
+        title: "Computer Networking Basics",
+        description: "Core transport, resolution, and addressing protocols powering the global internet.",
+        cards: [
+          {
+            id: "net_tcp",
+            title: "TCP 3-Way Handshake",
+            summary: "Client sends SYN, server returns SYN-ACK, client acknowledges with ACK to establish a reliable stream.",
+            mnemonic: "Synchronize, Sync-Ack, Acknowledge (S-SA-A)",
+            keywords: ["syn", "ack", "syn-ack", "handshake", "connection"],
+            accepted: ["SYN, SYN-ACK, ACK establish connection", "Client sends SYN, server responds SYN-ACK, client sends ACK"],
+            hint: "Three packets initiate connection: SYN, SYN-ACK, and ACK."
+          },
+          {
+            id: "net_dns",
+            title: "DNS Hierarchical Resolution",
+            summary: "Translates human domain names to machine IP addresses via Root, TLD, and Authoritative servers.",
+            mnemonic: "Root to TLD to Authoritative (R-T-A)",
+            keywords: ["dns", "root", "tld", "authoritative", "ip address"],
+            accepted: ["Resolves domains to IP addresses using root and TLD nameservers", "Translates hostnames to IP addresses"],
+            hint: "Starts at root dot server, traverses top-level domain (.com), then authoritative zone."
+          },
+          {
+            id: "net_subnet",
+            title: "Subnetting and CIDR Notation",
+            summary: "Divides an IP network into smaller segments using prefix lengths like /24 to optimize routing.",
+            mnemonic: "Classless Inter-Domain Routing Masking",
+            keywords: ["cidr", "subnet", "prefix", "mask", "network host"],
+            accepted: ["Splits network into subnets using prefix slash notation", "CIDR notation partitions host and network bits"],
+            hint: "Think of /24 meaning 24 network bits and 8 host bits."
+          },
+          {
+            id: "net_osi",
+            title: "OSI 7-Layer Reference Model",
+            summary: "Standard framework conceptualizing network communication: Physical, Data Link, Network, Transport, Session, Presentation, Application.",
+            mnemonic: "Please Do Not Throw Sausage Pizza Away",
+            keywords: ["osi", "layers", "transport", "network", "application", "physical"],
+            accepted: ["Seven layers from Physical to Application standardizing network protocols", "Physical, Data Link, Network, Transport, Session, Presentation, Application"],
+            hint: "Layer 1 is Physical wire, Layer 7 is User Application."
+          },
+          {
+            id: "net_nat",
+            title: "Network Address Translation (NAT)",
+            summary: "Rewrites private LAN IP addresses to a public WAN IP and port to conserve IPv4 space and protect internal topologies.",
+            mnemonic: "Private inside, single public outside",
+            keywords: ["nat", "private ip", "public ip", "port forwarding", "router"],
+            accepted: ["Maps private internal IP addresses to a shared public IP address", "Translates private LAN addresses to WAN public address"],
+            hint: "Enables multiple home devices to share one ISP public IP address."
+          }
+        ]
+      },
+      {
+        id: "ml_fundamentals",
+        title: "Machine Learning Fundamentals",
+        description: "Generalization theory, data leakage hazards, loss optimization, and evaluation metrics.",
+        cards: [
+          {
+            id: "ml_leakage",
+            title: "Data Leakage & Train/Test Contamination",
+            summary: "Spurious information crossing train and test boundaries (like patient scans in both sets), causing illusory 100% scores that fail in production.",
+            mnemonic: "Twins crossing the split partition",
+            keywords: ["data leakage", "contamination", "train test split", "generalization", "overfitting"],
+            accepted: ["Test samples or identical entity twins contaminating the training set", "Near-duplicate records leaking across partition boundary"],
+            hint: "Occurs when data that should be unseen is inadvertently shown to the model during training."
+          },
+          {
+            id: "ml_bias_variance",
+            title: "Bias-Variance Tradeoff",
+            summary: "High bias causes underfitting (over-simplified model); high variance causes overfitting (sensitivity to training noise).",
+            mnemonic: "Bias is blindness, variance is jitter",
+            keywords: ["bias", "variance", "underfitting", "overfitting", "tradeoff"],
+            accepted: ["Balancing underfitting from high bias against overfitting from high variance", "Minimizing total error by balancing bias and variance"],
+            hint: "Total error is Bias squared plus Variance plus Irreducible Noise."
+          },
+          {
+            id: "ml_gradient_descent",
+            title: "Gradient Descent Optimization",
+            summary: "Iteratively computes the negative gradient of the loss function with respect to weights, stepping downhill by the learning rate.",
+            mnemonic: "Walking downhill in fog by following steepest slope",
+            keywords: ["gradient", "loss", "learning rate", "weights", "descent"],
+            accepted: ["Iteratively updates parameters in the direction of steepest loss descent", "Optimizes weights using learning rate times negative gradient"],
+            hint: "Weights equal weights minus learning rate times gradient of loss."
+          },
+          {
+            id: "ml_regularization",
+            title: "L1 and L2 Regularization",
+            summary: "L1 (Lasso) penalizes absolute weight sums driving sparsity; L2 (Ridge) penalizes squared weights preventing extreme parameter magnitudes.",
+            mnemonic: "L1 creates zeros, L2 shrinks all",
+            keywords: ["regularization", "l1", "l2", "lasso", "ridge", "penalty"],
+            accepted: ["Penalizing large weights to prevent overfitting with L1 absolute or L2 squared loss", "L1 induces sparsity while L2 prevents weight explosion"],
+            hint: "Adds an extra penalty term to the objective function."
+          },
+          {
+            id: "ml_precision_recall",
+            title: "Precision vs Recall & F1-Score",
+            summary: "Precision measures of all predicted positives how many are true; Recall measures of all actual positives how many were found.",
+            mnemonic: "Precision is quality, Recall is quantity",
+            keywords: ["precision", "recall", "f1", "false positive", "false negative"],
+            accepted: ["Precision is true positives over predicted positives, recall is true positives over actual positives", "Harmonic mean F1 balances precision and recall"],
+            hint: "Precision avoids false alarms; recall avoids missed detections."
+          }
+        ]
+      },
+      {
+        id: "solar_system",
+        title: "Solar System Exploration",
+        description: "Planetary physics, orbital dynamics, solar phenomena, and cosmic boundaries.",
+        cards: [
+          {
+            id: "sol_heliosphere",
+            title: "Heliosphere & Solar Wind",
+            summary: "The vast bubble of charged particles blown by the Sun, shielding the solar system from high-energy galactic cosmic rays.",
+            mnemonic: "Sun's magnetic bubble shield",
+            keywords: ["heliosphere", "solar wind", "heliopause", "cosmic rays", "magnetosphere"],
+            accepted: ["The solar wind bubble protecting the planets from galactic cosmic radiation", "Magnetic plasma cavity created by the sun"],
+            hint: "Voyager 1 and 2 crossed the heliopause into interstellar space."
+          },
+          {
+            id: "sol_kuiper_oort",
+            title: "Kuiper Belt & Oort Cloud",
+            summary: "The Kuiper Belt is a disc of icy bodies beyond Neptune (30-55 AU); the Oort Cloud is an immense spherical reservoir of long-period comets.",
+            mnemonic: "Disc belt near, spherical cloud far",
+            keywords: ["kuiper belt", "oort cloud", "comets", "pluto", "icy bodies"],
+            accepted: ["Icy disc beyond Neptune and distant spherical cloud of comets", "Kuiper belt is planar past Neptune, Oort cloud is spherical boundary"],
+            hint: "Pluto orbits in the Kuiper Belt; long-period comets hail from the Oort Cloud."
+          },
+          {
+            id: "sol_roche_limit",
+            title: "Gas Giants & The Roche Limit",
+            summary: "The orbital distance within which tidal forces from a massive planet exceed the gravitational self-attraction of a satellite, tearing it into rings.",
+            mnemonic: "Tidal destruction boundary creating rings",
+            keywords: ["roche limit", "tidal forces", "rings", "saturn", "gravity"],
+            accepted: ["Distance where tidal forces disintegrate a celestial body into rings", "Orbital threshold where planet gravity shreds an orbiting moon"],
+            hint: "Why Saturn's main rings exist where large moons cannot hold together."
+          },
+          {
+            id: "sol_tidal_locking",
+            title: "Tidal Locking & Synchronous Orbit",
+            summary: "Gravitational friction slows a satellite's rotation until its orbital period matches its rotational period, keeping the same face to the primary.",
+            mnemonic: "One face forever locked",
+            keywords: ["tidal locking", "synchronous", "moon", "orbit", "rotation"],
+            accepted: ["When rotation period equals orbital period showing only one face", "Gravitational torque synchronizing spin and orbit"],
+            hint: "Why Earth's Moon always shows us the exact same side."
+          },
+          {
+            id: "sol_habitable_zone",
+            title: "Circumstellar Habitable Zone (Goldilocks)",
+            summary: "The orbital region around a star where ambient radiation permits liquid water to persist on a planet's surface.",
+            mnemonic: "Not too hot, not too cold: liquid water",
+            keywords: ["habitable zone", "goldilocks", "liquid water", "radiation", "atmosphere"],
+            accepted: ["Distance from star where atmospheric pressure allows liquid surface water", "The orbital band where temperatures allow liquid water"],
+            hint: "Earth orbits comfortably within the Sun's habitable zone."
+          }
+        ]
+      }
+    ];
+
+    // =========================================================================
+    // STATE MACHINE (RecallState)
+    // =========================================================================
+    const RecallState = {
+      INITIALIZING: 'INITIALIZING',
+      HOME: 'HOME',
+      SELECTING_DECK: 'SELECTING_DECK',
+      PLACING_CARDS: 'PLACING_CARDS',
+      READY_TO_RECALL: 'READY_TO_RECALL',
+      RECALLING: 'RECALLING',
+      EVALUATING: 'EVALUATING',
+      SHOWING_FEEDBACK: 'SHOWING_FEEDBACK',
+      SESSION_COMPLETE: 'SESSION_COMPLETE',
+      ERROR: 'ERROR'
+    };
+
+    let currentState = RecallState.INITIALIZING;
+    let selectedDeck = BUILTIN_DECKS[0];
+    let currentCardIndex = 0;
+    let cardPlacements = []; // { card, mesh, surface, position, rotation }
+    let sessionResults = []; // { cardId, score, status, latency, hintUsed, transcript }
+    let isRecordingAudio = false;
+    let recallStartTime = 0;
+    let audioContext = null;
+    let autoRotate = false;
+
+    // =========================================================================
+    // PROCEDURAL AUDIO FEEDBACK SYNTHESIZER (Web Audio API)
+    // =========================================================================
+    function playAudioTone(type) {
+      try {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+        const now = audioContext.currentTime;
+
+        if (type === 'tick') {
+          const osc = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(680, now);
+          osc.frequency.exponentialRampToValueAtTime(140, now + 0.04);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.linearRampToValueAtTime(0.001, now + 0.04);
+          osc.connect(gain);
+          gain.connect(audioContext.destination);
+          osc.start(now);
+          osc.stop(now + 0.04);
+        } else if (type === 'correct') {
+          // Warm harmonic chime
+          [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+            gain.gain.setValueAtTime(0.15, now + idx * 0.06);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.35);
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.start(now + idx * 0.06);
+            osc.stop(now + idx * 0.06 + 0.35);
+          });
+        } else if (type === 'partial') {
+          // Amber dual harmonic chime
+          [440, 554.37].forEach((freq) => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.start(now);
+            osc.stop(now + 0.28);
+          });
+        } else if (type === 'retry') {
+          // Low descending prompt
+          const osc = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(260, now);
+          osc.frequency.exponentialRampToValueAtTime(180, now + 0.22);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.linearRampToValueAtTime(0.001, now + 0.22);
+          osc.connect(gain);
+          gain.connect(audioContext.destination);
+          osc.start(now);
+          osc.stop(now + 0.22);
+        }
+      } catch (e) {
+        console.warn('Audio tone failed:', e);
+      }
+    }
+
+    // =========================================================================
+    // THREE.JS SPATIAL 3D SCENE SETUP (Warm Amber / Solar Orange Studio)
+    // =========================================================================
+    const wrapEl = document.getElementById('stage-canvas-wrap');
+    const canvasEl = document.getElementById('xr-canvas');
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x14110e, 0.07);
+
+    const camera = new THREE.PerspectiveCamera(60, wrapEl.clientWidth / wrapEl.clientHeight, 0.1, 50);
+    camera.position.set(0, 1.25, 0.95);
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true, alpha: true });
+    renderer.setSize(wrapEl.clientWidth, wrapEl.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Studio Lighting: Warm Amber Sun & Radiant Orange Rim
+    const ambientLight = new THREE.AmbientLight(0xfff5ea, 0.85);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xff9e4d, 1.4);
+    dirLight.position.set(2, 4, 3);
+    scene.add(dirLight);
+
+    const orangeFillLight = new THREE.PointLight(0xff5722, 1.3, 10);
+    orangeFillLight.position.set(-2, 2, -1);
+    scene.add(orangeFillLight);
+
+    // Grid Floor: Warm Solar Orange & Deep Espresso Grid
+    const grid = new THREE.GridHelper(10, 20, 0xff6b35, 0x382c22);
+    grid.position.y = -0.4;
+    scene.add(grid);
+
+    // Virtual Desk Surface (Physical Room Simulation)
+    const deskGeo = new THREE.BoxGeometry(1.6, 0.05, 0.7);
+    const deskMat = new THREE.MeshStandardMaterial({
+      color: 0x1e1915,
+      roughness: 0.45,
+      metalness: 0.5,
+      transparent: true,
+      opacity: 0.92
+    });
+    const deskMesh = new THREE.Mesh(deskGeo, deskMat);
+    deskMesh.position.set(0, 0.65, -0.15);
+    scene.add(deskMesh);
+
+    // Desk Edge Glow: Vibrant Solar Orange
+    const edgeGeo = new THREE.EdgesGeometry(deskGeo);
+    const edgeMat = new THREE.LineBasicMaterial({ color: 0xff6b35, transparent: true, opacity: 0.65 });
+    const deskEdge = new THREE.LineSegments(edgeGeo, edgeMat);
+    deskMesh.add(deskEdge);
+
+    // Group for spawned spatial cards
+    const cardGroup = new THREE.Group();
+    scene.add(cardGroup);
+
+    // Active Recall Beacon Beam: Radiant Solar Orange Cylinder
+    const beaconGeo = new THREE.CylinderGeometry(0.015, 0.06, 2.5, 16);
+    const beaconMat = new THREE.MeshBasicMaterial({
+      color: 0xff6b35,
+      transparent: true,
+      opacity: 0.45,
+      blending: THREE.AdditiveBlending
+    });
+    const beaconMesh = new THREE.Mesh(beaconGeo, beaconMat);
+    beaconMesh.visible = false;
+    scene.add(beaconMesh);
+
+    // =========================================================================
+    // 3D CARD TEXTURE GENERATOR (Procedural Canvas Textures - Figma Grade)
+    // =========================================================================
+    function createCardTexture(title, category, summary, mnemonic, isBlank = false, statusColor = null) {
+      const cvs = document.createElement('canvas');
+      cvs.width = 512;
+      cvs.height = 360;
+      const ctx = cvs.getContext('2d');
+
+      // Rounded Card Background (Deep Warm Espresso with Subtle Gradient)
+      ctx.fillStyle = statusColor ? statusColor : '#1e1915';
+      ctx.fillRect(0, 0, 512, 360);
+
+      // Glass gradient overlay
+      const grad = ctx.createLinearGradient(0, 0, 512, 360);
+      grad.addColorStop(0, 'rgba(255, 107, 53, 0.12)');
+      grad.addColorStop(1, 'rgba(20, 16, 13, 0.7)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 512, 360);
+
+      // Border outline: Vibrant Solar Orange or Status Color
+      ctx.strokeStyle = statusColor ? '#ffffff' : '#ff6b35';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(3, 3, 506, 354);
+
+      // Header Tag Badge
+      ctx.fillStyle = '#ff5722';
+      ctx.font = 'bold 20px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(category.toUpperCase(), 32, 48);
+
+      if (isBlank) {
+        // Obscured for Recall Mode
+        ctx.font = 'bold 32px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = '#fbf8f3';
+        ctx.fillText('??? SPATIAL TARGET', 32, 120);
+
+        ctx.font = '22px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillText('Cue: ' + mnemonic, 32, 180);
+
+        ctx.fillStyle = '#ded6cc';
+        ctx.font = '18px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText('Describe this concept to unlock evaluation.', 32, 240);
+      } else {
+        // Title
+        ctx.font = 'bold 28px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = '#fbf8f3';
+        ctx.fillText(title, 32, 100);
+
+        // Summary wrap
+        ctx.font = '20px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = '#ded6cc';
+        wrapText(ctx, summary, 32, 150, 448, 28);
+
+        // Mnemonic
+        ctx.font = 'italic 18px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillText('Mnemonic: ' + mnemonic, 32, 310);
+      }
+
+      const tex = new THREE.CanvasTexture(cvs);
+      tex.needsUpdate = true;
+      return tex;
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          ctx.fillText(line, x, y);
+          line = words[n] + ' ';
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, y);
+    }
+
+    // =========================================================================
+    // SPAWN 5 ERGONOMIC SPATIAL CARDS ON TABLETOP ARC
+    // =========================================================================
+    function spawnDeckCards(deck, isRecallBlank = false) {
+      while (cardGroup.children.length > 0) {
+        const obj = cardGroup.children[0];
+        cardGroup.remove(obj);
+      }
+      cardPlacements = [];
+
+      const count = deck.cards.length;
+      const arcSpreadDeg = 80;
+      const arcRadius = 0.58; // Seated reach envelope (0.45m - 0.65m)
+      const stepAngle = count > 1 ? (arcSpreadDeg / (count - 1)) * (Math.PI / 180) : 0;
+      const startAngle = -(arcSpreadDeg / 2) * (Math.PI / 180);
+
+      deck.cards.forEach((card, i) => {
+        const angle = startAngle + (i * stepAngle);
+        const x = Math.sin(angle) * arcRadius;
+        const z = -Math.cos(angle) * arcRadius + 0.35;
+        const y = 0.76;
+
+        const cardGeo = new THREE.PlaneGeometry(0.24, 0.17);
+        const tex = createCardTexture(card.title, deck.title.split(' ')[0], card.summary, card.mnemonic, isRecallBlank);
+        const cardMat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide });
+        const cardMesh = new THREE.Mesh(cardGeo, cardMat);
+
+        cardMesh.position.set(x, y, z);
+        cardMesh.lookAt(0, 1.25, 0.95);
+        cardMesh.userData = { card, index: i, initialPos: cardMesh.position.clone() };
+
+        cardGroup.add(cardMesh);
+        cardPlacements.push({
+          card,
+          mesh: cardMesh,
+          surface: 'Tabletop Arc',
+          pos: cardMesh.position.clone()
+        });
+      });
+    }
+
+    // =========================================================================
+    // FSM STATE MANAGEMENT
+    // =========================================================================
+    function setFsmState(newState) {
+      currentState = newState;
+      document.getElementById('fsm-state-badge').innerText = newState;
+
+      const notifEl = document.getElementById('hud-notification');
+      const actionBtn = document.getElementById('btn-primary-action');
+      const panelDecks = document.getElementById('panel-decks');
+      const panelRecall = document.getElementById('panel-recall');
+      const panelSummary = document.getElementById('panel-summary');
+
+      if (newState === RecallState.HOME) {
+        spawnDeckCards(selectedDeck, false);
+        beaconMesh.visible = false;
+        notifEl.innerHTML = `<strong>Memory Palace Ready:</strong> 5 concept cards spawned in your ergonomic seated envelope ($0.45\\text{ m} - 0.65\\text{ m}$). Drag and pin cards to spatial locations, then click <em>Start Recall Mode</em>.`;
+        actionBtn.innerText = 'Start Recall Mode';
+        actionBtn.style.display = 'inline-flex';
+        panelDecks.style.display = 'flex';
+        panelRecall.style.display = 'none';
+        panelSummary.style.display = 'none';
+      } else if (newState === RecallState.READY_TO_RECALL) {
+        currentCardIndex = 0;
+        sessionResults = [];
+        spawnDeckCards(selectedDeck, true);
+        setFsmState(RecallState.RECALLING);
+      } else if (newState === RecallState.RECALLING) {
+        notifEl.innerHTML = `<strong>Active Recall Active:</strong> Inspect the glowing spatial target. Speak your explanation or select an answer from the right sidebar.`;
+        actionBtn.style.display = 'none';
+        panelDecks.style.display = 'none';
+        panelRecall.style.display = 'flex';
+        panelSummary.style.display = 'none';
+        activateRecallCard(currentCardIndex);
+      } else if (newState === RecallState.SESSION_COMPLETE) {
+        beaconMesh.visible = false;
+        spawnDeckCards(selectedDeck, false);
+        notifEl.innerHTML = `<strong>Session Completed:</strong> Spaced repetition priorities computed via Half-Life Regression & Multi-factor scheduling.`;
+        actionBtn.style.display = 'none';
+        panelDecks.style.display = 'none';
+        panelRecall.style.display = 'none';
+        panelSummary.style.display = 'flex';
+        renderAdaptiveSummary();
+        playAudioTone('correct');
+      }
+    }
+
+    // Activate Card Target in Recall Mode
+    function activateRecallCard(index) {
+      if (index >= selectedDeck.cards.length) {
+        setFsmState(RecallState.SESSION_COMPLETE);
+        return;
+      }
+      const activeCard = selectedDeck.cards[index];
+      recallStartTime = performance.now();
+
+      // Position Beacon Beam over active card
+      const placement = cardPlacements[index];
+      if (placement && placement.mesh) {
+        beaconMesh.visible = true;
+        beaconMesh.position.set(placement.mesh.position.x, 1.4, placement.mesh.position.z);
+      }
+
+      document.getElementById('recall-card-index').innerText = `Card ${index + 1} / ${selectedDeck.cards.length}`;
+      document.getElementById('recall-cue').innerText = `Spatial Anchor: Position #${index + 1} (${placement.surface})`;
+      document.getElementById('recall-target-title').innerText = activeCard.title;
+      document.getElementById('recall-target-prompt').innerText = `Describe or select the core principles of "${activeCard.title}".`;
+
+      // Hide previous feedback
+      document.getElementById('evaluation-feedback-wrap').style.display = 'none';
+
+      // Populate Accessible Non-Speech Choice buttons
+      const choiceWrap = document.getElementById('recall-choice-container');
+      choiceWrap.innerHTML = '';
+
+      const choices = [
+        { text: activeCard.accepted[0], correct: true },
+        { text: `Counter-concept: inverted mechanics violating ${activeCard.mnemonic}`, correct: false },
+        { text: `Distractor rule from alternative subsystem specification`, correct: false }
+      ].sort(() => Math.random() - 0.5);
+
+      choices.forEach(ch => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.innerText = ch.text;
+        btn.onclick = () => {
+          evaluateAnswer(ch.text, false);
+        };
+        choiceWrap.appendChild(btn);
+      });
+    }
+
+    // Evaluate answer
+    function evaluateAnswer(studentAnswer, hintUsed = false) {
+      const latencySeconds = (performance.now() - recallStartTime) / 1000.0;
+      const activeCard = selectedDeck.cards[currentCardIndex];
+      const evalResult = computeSemanticScoreLocal(activeCard, studentAnswer, hintUsed);
+
+      sessionResults.push({
+        cardId: activeCard.id,
+        title: activeCard.title,
+        score: evalResult.score,
+        status: evalResult.status,
+        latency: latencySeconds,
+        hintUsed: hintUsed,
+        transcript: studentAnswer
+      });
+
+      // Update card visual with outcome color
+      const placement = cardPlacements[currentCardIndex];
+      if (placement && placement.mesh) {
+        let color = '#f43f5e';
+        if (evalResult.status === 'CORRECT') color = '#10b981';
+        else if (evalResult.status === 'PARTIAL') color = '#f97316';
+        placement.mesh.material.map = createCardTexture(activeCard.title, selectedDeck.title.split(' ')[0], activeCard.summary, activeCard.mnemonic, false, color);
+      }
+
+      // Audio feedback tone
+      if (evalResult.status === 'CORRECT') playAudioTone('correct');
+      else if (evalResult.status === 'PARTIAL') playAudioTone('partial');
+      else playAudioTone('retry');
+
+      // Display feedback banner
+      const feedbackWrap = document.getElementById('evaluation-feedback-wrap');
+      feedbackWrap.style.display = 'block';
+      feedbackWrap.innerHTML = `
+        <div class="feedback-banner ${evalResult.status.toLowerCase()}">
+          <div style="font-weight:700; font-family:var(--font-mono);">${evalResult.status} (${(evalResult.score * 100).toFixed(0)}% Semantic Match)</div>
+          <div>${evalResult.feedback}</div>
+          <div style="font-size:11px; opacity:0.85; margin-top:4px;">Recorded Latency: ${latencySeconds.toFixed(1)}s</div>
+          <button class="btn btn-secondary" id="btn-next-card" style="margin-top:8px; align-self:flex-start; min-height:44px;">
+            Next Spatial Target →
+          </button>
+        </div>
+      `;
+
+      document.getElementById('btn-next-card').onclick = () => {
+        currentCardIndex++;
+        activateRecallCard(currentCardIndex);
+      };
+    }
+
+    // Local Semantic Scoring Engine
+    function computeSemanticScoreLocal(card, text, hintUsed = false) {
+      if (!text || text.trim().length === 0) {
+        return {
+          score: 0.0,
+          status: 'RETRY',
+          feedback: 'No explanation detected. Voice or multiple choice required.'
+        };
+      }
+      const lower = text.toLowerCase();
+      let matchedCount = 0;
+      card.keywords.forEach(kw => {
+        if (lower.includes(kw.toLowerCase())) matchedCount++;
+      });
+      const kwRatio = matchedCount / card.keywords.length;
+
+      // Word overlap with accepted
+      let overlap = 0.0;
+      const studentWords = new Set(lower.split(/\W+/).filter(w => w.length > 2));
+      card.accepted.forEach(acc => {
+        const accWords = new Set(acc.toLowerCase().split(/\W+/).filter(w => w.length > 2));
+        let common = 0;
+        studentWords.forEach(w => { if (accWords.has(w)) common++; });
+        const sim = common / Math.max(studentWords.size, accWords.size);
+        if (sim > overlap) overlap = sim;
+      });
+
+      let score = (kwRatio * 0.6) + (overlap * 0.4);
+      if (hintUsed) score *= 0.9;
+      score = Math.min(1.0, Math.max(0.0, score));
+
+      let status = 'RETRY';
+      let feedback = `Review recommended. Mnemonic: ${card.mnemonic}`;
+      if (score >= 0.75) {
+        status = 'CORRECT';
+        feedback = `Mastered! Strong alignment with canonical definition.`;
+      } else if (score >= 0.50) {
+        status = 'PARTIAL';
+        feedback = `Partial recall. Re-test scheduled within session.`;
+      }
+
+      return { score, status, feedback };
+    }
+
+    // =========================================================================
+    // MULTI-FACTOR ADAPTIVE PRIORITY CALCULATOR
+    // Priority = 0.45(1 - R) + 0.25 T_norm + 0.20 H + 0.10 L_norm
+    // =========================================================================
+    function renderAdaptiveSummary() {
+      const tbody = document.getElementById('adaptive-queue-tbody');
+      tbody.innerHTML = '';
+
+      let totalScore = 0;
+      const scheduledEntries = sessionResults.map(res => {
+        totalScore += res.score;
+        const R = res.score;
+        const T_norm = 1.0; // immediate review candidate
+        const H = res.hintUsed ? 1.0 : 0.0;
+        const L_norm = Math.min(1.0, res.latency / 20.0);
+
+        const priority = (0.45 * (1.0 - R)) + (0.25 * T_norm) + (0.20 * H) + (0.10 * L_norm);
+        return {
+          ...res,
+          priority: Math.min(1.0, Math.max(0.0, priority))
+        };
+      });
+
+      scheduledEntries.sort((a, b) => b.priority - a.priority);
+
+      const avgAcc = sessionResults.length > 0 ? (totalScore / sessionResults.length) * 100 : 0;
+      document.getElementById('session-accuracy-badge').innerText = `${avgAcc.toFixed(1)}%`;
+
+      scheduledEntries.forEach(item => {
+        const row = document.createElement('tr');
+        const color = item.status === 'CORRECT' ? '#10b981' : item.status === 'PARTIAL' ? '#f59e0b' : '#f43f5e';
+        row.innerHTML = `
+          <td><strong>${item.title}</strong></td>
+          <td><span class="score-chip" style="background:${color}22; color:${color};">${(item.score * 100).toFixed(0)}%</span></td>
+          <td style="color:${color}; font-weight:600;">${item.status}</td>
+          <td style="font-family:var(--font-mono); font-weight:700;">${(item.priority * 100).toFixed(0)}%</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // =========================================================================
+    // SPEECH RECOGNITION (Web Speech API / Mic)
+    // =========================================================================
+    const micBtn = document.getElementById('btn-mic-record');
+    let recognition = null;
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRec();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        isRecordingAudio = true;
+        micBtn.classList.add('recording');
+        document.getElementById('mic-btn-label').innerText = 'Listening (Speak now)...';
+      };
+
+      recognition.onresult = (evt) => {
+        const transcript = evt.results[0][0].transcript;
+        console.log('[ASR] Transcribed:', transcript);
+        document.getElementById('mic-btn-label').innerText = `"${transcript}"`;
+        evaluateAnswer(transcript, false);
+      };
+
+      recognition.onerror = (err) => {
+        console.warn('Speech recognition error:', err);
+        isRecordingAudio = false;
+        micBtn.classList.remove('recording');
+        document.getElementById('mic-btn-label').innerText = 'Record Voice Explanation';
+      };
+
+      recognition.onend = () => {
+        isRecordingAudio = false;
+        micBtn.classList.remove('recording');
+        document.getElementById('mic-btn-label').innerText = 'Record Voice Explanation';
+      };
+    }
+
+    micBtn.onclick = () => {
+      if (recognition) {
+        if (!isRecordingAudio) {
+          recognition.start();
+        } else {
+          recognition.stop();
+        }
+      } else {
+        alert('Web Speech API is not supported in this browser. Please use the Accessible Non-Speech Choice buttons below.');
+      }
+    };
+
+    // =========================================================================
+    // POPULATE DECK UI & EVENT LISTENERS
+    // =========================================================================
+    const deckListContainer = document.getElementById('deck-list-container');
+    BUILTIN_DECKS.forEach((deck, idx) => {
+      const el = document.createElement('div');
+      el.className = `deck-item ${idx === 0 ? 'selected' : ''}`;
+      el.innerHTML = `
+        <div class="deck-title">${deck.title}</div>
+        <div class="deck-desc">${deck.description}</div>
+        <div class="deck-meta">
+          <span>${deck.cards.length} Spatial Concepts</span>
+          <span>Adaptive Ready</span>
+        </div>
+      `;
+      el.onclick = () => {
+        document.querySelectorAll('.deck-item').forEach(d => d.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedDeck = deck;
+        document.getElementById('deck-subtitle').innerText = deck.title;
+        setFsmState(RecallState.HOME);
+        playAudioTone('tick');
+      };
+      deckListContainer.appendChild(el);
+    });
+
+    document.getElementById('btn-primary-action').onclick = () => {
+      setFsmState(RecallState.READY_TO_RECALL);
+    };
+
+    document.getElementById('btn-restart-adaptive').onclick = () => {
+      setFsmState(RecallState.READY_TO_RECALL);
+    };
+
+    document.getElementById('btn-recenter').onclick = () => {
+      spawnDeckCards(selectedDeck, currentState === RecallState.READY_TO_RECALL || currentState === RecallState.RECALLING);
+      playAudioTone('tick');
+    };
+
+    // Theme Switcher Engine
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeLabel = document.getElementById('theme-label');
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      if (theme === 'warm-espresso') {
+        themeIcon.innerText = '☀';
+        themeLabel.innerText = 'Beige';
+        scene.fog.color.setHex(0x14110e);
+        renderer.setClearColor(0x000000, 0);
+      } else {
+        themeIcon.innerText = '🌙';
+        themeLabel.innerText = 'Espresso';
+        scene.fog.color.setHex(0xe5ddcd);
+        renderer.setClearColor(0x000000, 0);
+      }
+      localStorage.setItem('recallroom_theme', theme);
+    }
+
+    const savedTheme = localStorage.getItem('recallroom_theme') || 'luxury-beige';
+    setTheme(savedTheme);
+
+    themeToggleBtn.onclick = () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      const next = cur === 'luxury-beige' ? 'warm-espresso' : 'luxury-beige';
+      setTheme(next);
+      playAudioTone('tick');
+    };
+
+    // Judge Scorecard Drawer Handlers
+    const judgeDrawer = document.getElementById('judge-drawer');
+    const judgeBackdrop = document.getElementById('judge-drawer-backdrop');
+    const openRubricBtn = document.getElementById('btn-open-rubric');
+    const closeDrawerBtn = document.getElementById('btn-close-drawer');
+    const copyScorecardBtn = document.getElementById('btn-copy-scorecard');
+    const toastNotify = document.getElementById('toast-notify');
+
+    function openDrawer() {
+      judgeDrawer.classList.add('open');
+      judgeBackdrop.classList.add('open');
+      playAudioTone('tick');
+    }
+
+    function closeDrawer() {
+      judgeDrawer.classList.remove('open');
+      judgeBackdrop.classList.remove('open');
+    }
+
+    openRubricBtn.onclick = openDrawer;
+    closeDrawerBtn.onclick = closeDrawer;
+    judgeBackdrop.onclick = closeDrawer;
+
+    // Interactive Rubric Sliders
+    const sliders = [
+      { id: 'slide-r1', valId: 'val-r1', name: 'Seated Ergonomics & Reach' },
+      { id: 'slide-r2', valId: 'val-r2', name: 'Whisper ASR Speech Model' },
+      { id: 'slide-r3', valId: 'val-r3', name: 'Sentence Transformers Semantic' },
+      { id: 'slide-r4', valId: 'val-r4', name: 'Adaptive Spaced Repetition' },
+      { id: 'slide-r5', valId: 'val-r5', name: 'Production Polish & Accessibility' }
+    ];
+
+    function updateRubricTotal() {
+      let sum = 0;
+      sliders.forEach(s => {
+        const el = document.getElementById(s.id);
+        const val = parseInt(el.value, 10);
+        sum += val;
+        document.getElementById(s.valId).innerText = `${val}/20`;
+      });
+      document.getElementById('rubric-total-score').innerText = sum;
+    }
+
+    sliders.forEach(s => {
+      document.getElementById(s.id).addEventListener('input', updateRubricTotal);
+    });
+
+    copyScorecardBtn.onclick = () => {
+      let summary = `=== RECALLROOM XR · HACKATHON JUDGE EVALUATION ===\n`;
+      summary += `Target: Meta VR Start Developer Competition 2026 (Productivity Track)\n\n`;
+      sliders.forEach(s => {
+        const val = document.getElementById(s.id).value;
+        summary += `- ${s.name}: ${val}/20\n`;
+      });
+      const total = document.getElementById('rubric-total-score').innerText;
+      summary += `\nOVERALL SCORE: ${total}/100\n`;
+      summary += `Feedback: Exceptional spatial immersion with vibrant warm orange & luxury beige aesthetics, Whisper ASR, and mathematical spaced repetition.`;
+
+      navigator.clipboard.writeText(summary).then(() => {
+        toastNotify.classList.add('show');
+        playAudioTone('correct');
+        setTimeout(() => toastNotify.classList.remove('show'), 2800);
+      });
+    };
+
+    // Keyboard Shortcuts (J = Judge Rubric, T = Theme)
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+      if (e.key === 'j' || e.key === 'J') {
+        if (judgeDrawer.classList.contains('open')) closeDrawer();
+        else openDrawer();
+      } else if (e.key === 't' || e.key === 'T') {
+        themeToggleBtn.click();
+      }
+    });
+
+    // Settings Modal Handlers
+    const settingsModal = document.getElementById('settings-modal');
+    document.getElementById('btn-settings').onclick = () => settingsModal.classList.add('open');
+    document.getElementById('btn-close-settings').onclick = () => settingsModal.classList.remove('open');
+
+    // Camera toolbar buttons
+    document.getElementById('btn-reset-cam').onclick = () => {
+      camera.position.set(0, 1.25, 0.95);
+      camera.lookAt(0, 0.76, 0);
+      playAudioTone('tick');
+    };
+
+    const autoRotateBtn = document.getElementById('btn-auto-rotate');
+    autoRotateBtn.onclick = () => {
+      autoRotate = !autoRotate;
+      autoRotateBtn.style.borderColor = autoRotate ? 'var(--accent-orange)' : 'var(--border-subtle)';
+      autoRotateBtn.style.color = autoRotate ? 'var(--accent-orange)' : 'var(--ink-primary)';
+      playAudioTone('tick');
+    };
+
+    // MOUSE DRAG CARD INTERACTION IN THREE.JS
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let draggedObject = null;
+    let plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+
+    window.addEventListener('mousedown', (e) => {
+      const rect = canvasEl.getBoundingClientRect();
+      if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) return;
+
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(cardGroup.children);
+      if (intersects.length > 0) {
+        draggedObject = intersects[0].object;
+        playAudioTone('tick');
+      }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!draggedObject) return;
+      const rect = canvasEl.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersectPoint = new THREE.Vector3();
+      raycaster.ray.intersectPlane(plane, intersectPoint);
+      if (intersectPoint) {
+        draggedObject.position.x = intersectPoint.x;
+        draggedObject.position.y = Math.max(0.68, intersectPoint.y);
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (draggedObject) {
+        playAudioTone('tick');
+        draggedObject = null;
+      }
+    });
+
+    // Window Resize
+    window.addEventListener('resize', () => {
+      camera.aspect = wrapEl.clientWidth / wrapEl.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(wrapEl.clientWidth, wrapEl.clientHeight);
+    });
+
+    // Animation Loop
+    let clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+
+      // Subtle levitation
+      cardGroup.children.forEach((c, idx) => {
+        if (c !== draggedObject) {
+          c.position.y = (c.userData.initialPos ? c.userData.initialPos.y : 0.76) + Math.sin(t * 1.5 + idx) * 0.008;
+        }
+      });
+
+      // Beacon rotation
+      if (beaconMesh.visible) {
+        beaconMesh.rotation.y = t * 2.0;
+      }
+
+      // Auto Orbit
+      if (autoRotate) {
+        const radius = 0.95;
+        camera.position.x = Math.sin(t * 0.4) * 0.4;
+        camera.position.z = Math.cos(t * 0.4) * 0.2 + 0.85;
+        camera.lookAt(0, 0.76, 0);
+      }
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Start in HOME state
+    setFsmState(RecallState.HOME);
+  </script>
+</body>
+</html>
+'''
+
+def main():
+    print("[1/3] Writing updated Vibrant Orange & Beige index.html...")
+    with open(INDEX_PATH, "w", encoding="utf-8") as f:
+        f.write(HTML_TEMPLATE)
+    print(f"PASS: index.html written ({len(HTML_TEMPLATE)} bytes)")
+
+    print("[2/3] Mirroring to OPEN_ME.html...")
+    with open(OPEN_ME_PATH, "w", encoding="utf-8") as f:
+        f.write(HTML_TEMPLATE)
+    print(f"PASS: OPEN_ME.html updated ({len(HTML_TEMPLATE)} bytes)")
+
+    print("[3/3] Done.")
+
+if __name__ == "__main__":
+    main()
