@@ -94,12 +94,13 @@
     {
       "id": "US-008",
       "title": "Feature Selection Pre-Split Leakage Workshop Module",
-      "status": "backlog",
+      "status": "passed",
       "acceptanceCriteria": [
         "Implement second workshop scenario based on scikit-learn feature selection leakage pitfall.",
         "Allow developer to physically toggle between 'Select features before split' vs 'Select features after split'.",
         "Demonstrate false correlation discovery on purely random synthetic noise."
-      ]
+      ],
+      "verificationCommand": "node twintrace/tests/model.test.mjs"
     }
   ]
 }

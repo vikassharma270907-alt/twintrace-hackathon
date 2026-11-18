@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { createSession, nearestNeighbor, splitEvidence, estimateRetention } from "../src/model.js";
+import { createSession, nearestNeighbor, splitEvidence, estimateRetention, simulateFeatureSelectionLeakage } from "../src/model.js";
 
 const fixtures = JSON.parse(await readFile(new URL("../data/cases.json", import.meta.url), "utf8"));
 function memoryStore(initial) {
@@ -392,4 +392,18 @@ test("session records spaced review history upon completing review verdict", () 
   assert.ok(done.retention.retention >= 0.99);
   assert.equal(done.retention.dueForReview, false);
 });
+
+// ─── Scikit-Learn Feature Selection Pre-Split Leakage (US-008) ─────────────
+
+test("simulateFeatureSelectionLeakage demonstrates false correlation on pure noise", () => {
+  const res = simulateFeatureSelectionLeakage(1000, 100, 10);
+  assert.equal(res.nFeatures, 1000);
+  assert.equal(res.nSamples, 100);
+  assert.equal(res.topK, 10);
+  // Pre-split feature selection produces higher false test accuracy than post-split
+  assert.ok(res.leakyAccuracy > res.cleanAccuracy, `Expected leaky ${res.leakyAccuracy} > clean ${res.cleanAccuracy}`);
+  // Clean split remains near chance baseline (~0.50)
+  assert.ok(res.cleanAccuracy >= 0.35 && res.cleanAccuracy <= 0.65, `Clean accuracy ${res.cleanAccuracy} should be near chance`);
+});
+
 

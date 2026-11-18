@@ -24,6 +24,74 @@ export function estimateRetention(history, currentTime = Date.now()) {
   };
 }
 
+// Scikit-Learn Pre-Split vs Post-Split Feature Selection Leakage Simulator (US-008)
+// Demonstrates how feature selection on the full dataset before splitting creates false correlation on pure Gaussian noise.
+export function simulateFeatureSelectionLeakage(nFeatures = 1000, nSamples = 100, topK = 10) {
+  let seed = 999;
+  function random() {
+    seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+  function gaussian() {
+    let u = 0, v = 0;
+    while (u === 0) u = random();
+    while (v === 0) v = random();
+    return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+  }
+
+  const half = Math.floor(nSamples / 2);
+  const labels = Array.from({length: nSamples}, () => random() < 0.5 ? 1 : 0);
+  const matrix = Array.from({length: nSamples}, () => Array.from({length: nFeatures}, () => gaussian()));
+
+  // Leaky: select features on full dataset
+  const fullCorrs = [];
+  for (let f = 0; f < nFeatures; f++) {
+    let diff = 0;
+    for (let i = 0; i < nSamples; i++) diff += (labels[i] === 1 ? 1 : -1) * matrix[i][f];
+    fullCorrs.push({f, c: Math.abs(diff)});
+  }
+  fullCorrs.sort((a,b) => b.c - a.c);
+  const leakyFeats = fullCorrs.slice(0, topK).map(x => x.f);
+
+  // Clean: select features strictly on train half
+  const trainCorrs = [];
+  for (let f = 0; f < nFeatures; f++) {
+    let diff = 0;
+    for (let i = 0; i < half; i++) diff += (labels[i] === 1 ? 1 : -1) * matrix[i][f];
+    trainCorrs.push({f, c: Math.abs(diff)});
+  }
+  trainCorrs.sort((a,b) => b.c - a.c);
+  const cleanFeats = trainCorrs.slice(0, topK).map(x => x.f);
+
+  function evaluate(feats) {
+    let correct = 0;
+    for (let i = half; i < nSamples; i++) {
+      let best = 0, bestDist = Infinity;
+      for (let j = 0; j < half; j++) {
+        let d = 0;
+        for (const f of feats) { const g = matrix[i][f] - matrix[j][f]; d += g*g; }
+        if (d < bestDist) { bestDist = d; best = j; }
+      }
+      if (labels[best] === labels[i]) correct++;
+    }
+    return correct / (nSamples - half);
+  }
+
+  const leakyAccuracy = evaluate(leakyFeats);
+  const cleanAccuracy = evaluate(cleanFeats);
+
+  return {
+    leakyAccuracy,
+    cleanAccuracy,
+    delta: Number((leakyAccuracy - cleanAccuracy).toFixed(4)),
+    topK,
+    nFeatures,
+    nSamples
+  };
+}
+
 // Squared Euclidean distance preserves the ranking without a square root.
 export function nearestNeighbor(training, sample) {
   let best = null;
