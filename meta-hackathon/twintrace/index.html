@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f6f4ee">
+  <title>Twin Trace · Split Lab</title>
+  <link rel="stylesheet" href="./src/style.css">
+  <script type="module" src="./src/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#inspection">Skip to inspection</a>
+  <header class="masthead">
+    <div class="wrap masthead-inner">
+      <div class="brand" aria-label="Split Lab"><span class="mark" aria-hidden="true"><i></i><i></i></span>Split Lab<span class="brand-divider"></span><span class="brand-sub">Model review</span></div>
+      <button id="launch" class="headset" type="button" disabled><span class="visor" aria-hidden="true"></span> Enter VR</button>
+    </div>
+  </header>
+  <main class="wrap">
+    <div id="xr-status" role="status" hidden></div>
+    <section class="introduction">
+      <div><p class="eyebrow">Evaluation workshop</p><h1>Twin Trace<span>.</span></h1></div>
+      <p class="brief">A classifier scored <strong id="opening-score">…</strong> on its evaluation set. Would you release it for objects it has never seen?</p>
+    </section>
+    <div id="loader" role="status">Opening the case…</div>
+    <div id="workbench" hidden>
+      <div class="workspace">
+        <section class="viewer" id="inspection" aria-labelledby="viewer-heading">
+          <div class="viewer-top"><h2 id="viewer-heading">Specimen viewer</h2><span class="live-id" id="case-label"></span></div>
+          <div class="plot-wrap">
+            <canvas id="plot" tabindex="0" aria-label="Rotatable six-feature specimen. Use the left and right arrow keys to rotate, or drag."></canvas>
+            <div class="plot-legend"><span><i class="sample-dot"></i>Evaluation</span><span id="match-key" hidden><i class="match-dot"></i>Training match</span></div>
+          </div>
+          <div class="viewer-foot"><span id="specimen-id"></span><div class="rotate-controls"><button type="button" id="rotate-left" aria-label="Rotate specimen left">↶</button><button type="button" id="rotate-right" aria-label="Rotate specimen right">↷</button></div></div>
+        </section>
+        <section class="panel" aria-labelledby="stage-title">
+          <ol class="progress" id="progress" aria-label="Review progress"><li>Inspect</li><li>Repair</li><li>Decide</li></ol>
+          <div class="step-copy" aria-live="polite"><p class="eyebrow" id="step-label"></p><h2 id="stage-title"></h2><p id="stage-copy"></p></div>
+          <dl id="pair-detail" class="pair-detail" hidden><div><dt>Evaluation origin</dt><dd id="sample-group"></dd></div><div><dt>Training origin</dt><dd id="neighbor-group"></dd></div></dl>
+          <div class="actions" id="actions"></div>
+        </section>
+      </div>
+      <section class="readouts" aria-labelledby="readout-title">
+        <div class="readout-head"><h2 id="readout-title">Evaluation ledger</h2><span>Computed from case data</span></div>
+        <div class="metrics" aria-live="polite"><div><h3>Evaluation accuracy</h3><strong id="eval-value"></strong><span id="eval-count"></span></div><div><h3>Shared groups</h3><strong id="overlap-value"></strong><span>Training ∩ evaluation</span></div><div><h3>Training size</h3><strong id="train-value"></strong><span>Examples in the split</span></div><div><h3>Unseen audit</h3><strong id="audit-value"></strong><span id="audit-count"></span></div></div>
+      </section>
+      <div class="bottom-row"><span>Synthetic data · One-nearest-neighbor classifier</span><button type="button" id="reset">Restart case</button></div>
+    </div>
+    <noscript>This interactive review requires JavaScript.</noscript>
+  </main>
+  <canvas id="xr-canvas" aria-hidden="true" width="2" height="2"></canvas>
+</body>
+</html>

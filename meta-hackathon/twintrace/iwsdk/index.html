@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0a1820"><title>Twintrace • Model review</title>
+  <style>
+    *{box-sizing:border-box}html,body,#scene{width:100%;height:100%;margin:0;overflow:hidden}
+    body{background:#0a1820;color:#edf4ec;font:16px/1.35 system-ui,sans-serif}
+    #launch{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);margin:0;padding:8px 12px;max-width:96vw;background:#142b33e8;border-radius:12px;display:flex;align-items:center;gap:12px}
+    button{background:#f5d58a;border:0;border-radius:6px;color:#19262a;padding:8px 14px;font:inherit;white-space:nowrap;cursor:pointer}button:focus-visible{outline:3px solid white}
+    #status{font-size:.85rem;max-width:48ch}
+  </style>
+</head>
+<body><main id="scene" aria-label="Twintrace immersive model review"></main>
+  <div id="launch"><button id="enter" disabled>Enter VR</button><span id="status" role="status">Loading the review desk…</span></div>
+  <script type="module" src="./scene.js"></script>
+</body></html>
