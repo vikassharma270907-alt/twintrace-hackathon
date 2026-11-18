@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#f6f4ee">
+  <meta name="theme-color" content="#090e0c">
   <title>Twin Trace · Split Lab</title>
   <link rel="stylesheet" href="./src/style.css">
   <script type="module" src="./src/app.js"></script>
@@ -12,39 +12,185 @@
   <a class="skip-link" href="#inspection">Skip to inspection</a>
   <header class="masthead">
     <div class="wrap masthead-inner">
-      <div class="brand" aria-label="Split Lab"><span class="mark" aria-hidden="true"><i></i><i></i></span>Split Lab<span class="brand-divider"></span><span class="brand-sub">Model review</span></div>
-      <button id="launch" class="headset" type="button" disabled><span class="visor" aria-hidden="true"></span> Enter VR</button>
+      <div class="brand" aria-label="Split Lab">
+        <span class="mark" aria-hidden="true"><i></i><i></i></span>
+        Split Lab
+        <span class="brand-divider"></span>
+        <span class="brand-sub">Model Review &amp; Data Leakage Lab</span>
+      </div>
+      <div class="header-actions">
+        <button id="sound-toggle" class="sound-btn" type="button" aria-label="Toggle procedural audio" title="Toggle audio feedback">
+          <span class="sound-icon" aria-hidden="true">🔊</span>
+          <span class="sound-label">Audio ON</span>
+        </button>
+        <button id="launch" class="headset" type="button" disabled>
+          <span class="visor" aria-hidden="true"></span> Enter VR
+        </button>
+      </div>
     </div>
   </header>
   <main class="wrap">
     <div id="xr-status" role="status" hidden></div>
     <section class="introduction">
-      <div><p class="eyebrow">Evaluation workshop</p><h1>Twin Trace<span>.</span></h1></div>
-      <p class="brief">A classifier scored <strong id="opening-score">…</strong> on its evaluation set. Would you release it for objects it has never seen?</p>
+      <div>
+        <div class="intro-badges">
+          <span class="eyebrow-pill">Evaluation Workshop</span>
+          <span class="fiat-badge">Meta VR Start 2026</span>
+        </div>
+        <h1>Twin Trace<span>.</span></h1>
+      </div>
+      <div class="intro-copy-wrap">
+        <p class="brief">A classifier scored <strong id="opening-score">…</strong> on its evaluation set. Would you release it for objects it has never seen?</p>
+        <!-- Interactive Case Switcher Tabs -->
+        <div class="case-switcher-wrap">
+          <div class="case-switcher-label">Select review scenario:</div>
+          <div class="case-tabs" role="tablist" aria-label="Review cases">
+            <button type="button" role="tab" id="tab-case-001" class="case-tab active" aria-selected="true" data-seed="0">
+              <span class="tab-chip chip-warning">LEAKAGE</span>
+              <span class="tab-body">
+                <span class="tab-name">Case 001 · Leaky Split</span>
+                <span class="tab-meta">100.0% Eval · 40 Twins Overlap</span>
+              </span>
+            </button>
+            <button type="button" role="tab" id="tab-case-002" class="case-tab" aria-selected="false" data-seed="101">
+              <span class="tab-chip chip-success">CONTROL</span>
+              <span class="tab-body">
+                <span class="tab-name">Case 002 · Look-Alike</span>
+                <span class="tab-meta">90.0% Eval · 0 Overlap (Clean)</span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
     </section>
     <div id="loader" role="status">Opening the case…</div>
     <div id="workbench" hidden>
       <div class="workspace">
         <section class="viewer" id="inspection" aria-labelledby="viewer-heading">
-          <div class="viewer-top"><h2 id="viewer-heading">Specimen viewer</h2><span class="live-id" id="case-label"></span></div>
-          <div class="plot-wrap">
-            <canvas id="plot" tabindex="0" aria-label="Rotatable six-feature specimen. Use the left and right arrow keys to rotate, or drag."></canvas>
-            <div class="plot-legend"><span><i class="sample-dot"></i>Evaluation</span><span id="match-key" hidden><i class="match-dot"></i>Training match</span></div>
+          <div class="viewer-top">
+            <div class="viewer-title-group">
+              <h2 id="viewer-heading">3D Specimen Visualizer</h2>
+              <span class="view-status-tag" id="view-mode-tag">Orbital Single Specimen</span>
+            </div>
+            <span class="live-id" id="case-label"></span>
           </div>
-          <div class="viewer-foot"><span id="specimen-id"></span><div class="rotate-controls"><button type="button" id="rotate-left" aria-label="Rotate specimen left">↶</button><button type="button" id="rotate-right" aria-label="Rotate specimen right">↷</button></div></div>
+          <div class="plot-wrap">
+            <canvas id="plot" tabindex="0" aria-label="Rotatable 3D crystal specimen with glowing trajectory trace. Use arrow keys or drag to orbit."></canvas>
+            <!-- 3D HUD overlay for spatial readout -->
+            <div id="spatial-hud" class="spatial-hud" aria-live="polite">
+              <div class="hud-item eval-node">
+                <span class="hud-dot eval-dot"></span>
+                <span class="hud-text" id="hud-eval-id">Evaluation: E00</span>
+              </div>
+              <div class="hud-beam-data" id="hud-beam-data" hidden>
+                <span class="beam-arrow">⟷</span>
+                <span class="hud-metric" id="hud-distance">L2 Trace: 0.003</span>
+                <span class="hud-status-badge" id="hud-match-status">TWIN DETECTED</span>
+              </div>
+              <div class="hud-item match-node" id="hud-match-node" hidden>
+                <span class="hud-dot match-dot"></span>
+                <span class="hud-text" id="hud-match-id">Training: Twin E00</span>
+              </div>
+            </div>
+            <div class="plot-legend">
+              <span class="legend-item"><i class="sample-dot"></i>Evaluation Specimen</span>
+              <span class="legend-item" id="match-key" hidden><i class="match-dot"></i>Training Twin Match</span>
+              <span class="legend-item" id="trace-key" hidden><i class="trace-line"></i>Trajectory Beam</span>
+            </div>
+          </div>
+          <div class="viewer-foot">
+            <div class="specimen-meta">
+              <span id="specimen-id"></span>
+              <span class="interaction-hint">Drag or use ↶ ↷ to orbit crystal</span>
+            </div>
+            <div class="rotate-controls">
+              <button type="button" id="rotate-left" aria-label="Rotate specimen left">↶</button>
+              <button type="button" id="rotate-reset" aria-label="Reset orientation">⦿</button>
+              <button type="button" id="rotate-right" aria-label="Rotate specimen right">↷</button>
+            </div>
+          </div>
         </section>
         <section class="panel" aria-labelledby="stage-title">
-          <ol class="progress" id="progress" aria-label="Review progress"><li>Inspect</li><li>Repair</li><li>Decide</li></ol>
-          <div class="step-copy" aria-live="polite"><p class="eyebrow" id="step-label"></p><h2 id="stage-title"></h2><p id="stage-copy"></p></div>
-          <dl id="pair-detail" class="pair-detail" hidden><div><dt>Evaluation origin</dt><dd id="sample-group"></dd></div><div><dt>Training origin</dt><dd id="neighbor-group"></dd></div></dl>
+          <ol class="progress" id="progress" aria-label="Review progress">
+            <li id="prog-inspect">Inspect</li>
+            <li id="prog-repair">Repair</li>
+            <li id="prog-vote">Decide</li>
+          </ol>
+          <div class="step-copy" aria-live="polite">
+            <div class="step-header-row">
+              <p class="eyebrow" id="step-label"></p>
+              <span class="phase-pill" id="phase-pill">Phase 1/3</span>
+            </div>
+            <h2 id="stage-title"></h2>
+            <p id="stage-copy"></p>
+          </div>
+          <dl id="pair-detail" class="pair-detail" hidden>
+            <div class="detail-card">
+              <dt>Evaluation origin</dt>
+              <dd id="sample-group"></dd>
+            </div>
+            <div class="detail-card">
+              <dt>Training origin</dt>
+              <dd id="neighbor-group"></dd>
+            </div>
+            <div class="detail-card full-width" id="disjoint-status-card">
+              <dt>Split relationship</dt>
+              <dd id="split-relationship-text">Checking…</dd>
+            </div>
+          </dl>
           <div class="actions" id="actions"></div>
         </section>
       </div>
       <section class="readouts" aria-labelledby="readout-title">
-        <div class="readout-head"><h2 id="readout-title">Evaluation ledger</h2><span>Computed from case data</span></div>
-        <div class="metrics" aria-live="polite"><div><h3>Evaluation accuracy</h3><strong id="eval-value"></strong><span id="eval-count"></span></div><div><h3>Shared groups</h3><strong id="overlap-value"></strong><span>Training ∩ evaluation</span></div><div><h3>Training size</h3><strong id="train-value"></strong><span>Examples in the split</span></div><div><h3>Unseen audit</h3><strong id="audit-value"></strong><span id="audit-count"></span></div></div>
+        <div class="readout-head">
+          <div class="readout-title-group">
+            <h2 id="readout-title">Evaluation Ledger</h2>
+            <span class="readout-badge">Deterministic 1-NN Verification</span>
+          </div>
+          <span class="readout-subtitle">Computed strictly from partition evidence</span>
+        </div>
+        <div class="metrics" aria-live="polite">
+          <div class="metric-card" id="card-eval">
+            <div class="metric-header">
+              <h3>Evaluation accuracy</h3>
+              <span class="metric-badge" id="eval-delta-badge" hidden></span>
+            </div>
+            <strong id="eval-value">100%</strong>
+            <span id="eval-count" class="metric-count">40 of 40 correct</span>
+          </div>
+          <div class="metric-card" id="card-overlap">
+            <div class="metric-header">
+              <h3>Shared groups</h3>
+              <span class="metric-badge" id="overlap-delta-badge" hidden></span>
+            </div>
+            <strong id="overlap-value">40</strong>
+            <span id="overlap-desc" class="metric-count">Training ∩ evaluation</span>
+          </div>
+          <div class="metric-card" id="card-train">
+            <div class="metric-header">
+              <h3>Training size</h3>
+              <span class="metric-badge" id="train-delta-badge" hidden>Fixed 120</span>
+            </div>
+            <strong id="train-value">120</strong>
+            <span id="train-desc" class="metric-count">Balanced group partitions</span>
+          </div>
+          <div class="metric-card" id="card-audit">
+            <div class="metric-header">
+              <h3>Unseen audit</h3>
+              <span class="metric-badge" id="audit-delta-badge" hidden>Sealed</span>
+            </div>
+            <strong id="audit-value">Sealed</strong>
+            <span id="audit-count" class="metric-count">Reveal after your vote</span>
+          </div>
+        </div>
       </section>
-      <div class="bottom-row"><span>Synthetic data · One-nearest-neighbor classifier</span><button type="button" id="reset">Restart case</button></div>
+      <div class="bottom-row">
+        <div class="system-tag">
+          <span class="pulse-dot"></span>
+          <span>Zero external npm dependencies · Standard WebXR &amp; Web Audio API · 1-NN Euclidean</span>
+        </div>
+        <button type="button" id="reset">Restart case</button>
+      </div>
     </div>
     <noscript>This interactive review requires JavaScript.</noscript>
   </main>

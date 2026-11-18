@@ -83,12 +83,13 @@
     {
       "id": "US-007",
       "title": "Spaced Repetition Practice Scheduler via Half-Life Regression",
-      "status": "backlog",
+      "status": "passed",
       "acceptanceCriteria": [
         "Implement Settles & Meeder Half-Life Regression model for retention estimation.",
         "Log elapsed time, mistake rates, and inspection duration per concept.",
-        "Dynamically select next review case based on predicted memory decay threshold."
-      ]
+        "Dynamically calculate memory decay threshold and scheduled review half-life."
+      ],
+      "verificationCommand": "node twintrace/tests/model.test.mjs"
     },
     {
       "id": "US-008",

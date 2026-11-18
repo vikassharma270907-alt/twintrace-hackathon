@@ -88,6 +88,19 @@ export function createSession(fixtures, storage) {
     };
   }
 
+  function selectCase(targetSeed) {
+    const target = cases.find(row => row.seed === targetSeed);
+    if (target) {
+      position = { seed: target.seed, stage: "inspect", verdict: null };
+      try {
+        storage?.setItem(SAVE_KEY, JSON.stringify({ version: SAVE_VERSION, ...position }));
+      } catch {
+        // Storage may be blocked or full. Keep the current in-memory position.
+      }
+    }
+    return getState();
+  }
+
   function act(action) {
     const { stage } = position;
     if (action === "reset") {
@@ -95,6 +108,9 @@ export function createSession(fixtures, storage) {
     } else if (action === "next" && stage === "done") {
       const index = cases.findIndex(row => row.seed === position.seed);
       position = { seed: cases[(index + 1) % cases.length].seed, stage: "inspect", verdict: null };
+    } else if (typeof action === "string" && action.startsWith("case:")) {
+      const targetSeed = Number(action.slice(5));
+      return selectCase(targetSeed);
     } else if (action === "inspect" && stage === "inspect") {
       position = { ...position, stage: "repair" };
     } else if (action === "repair" && stage === "repair") {
@@ -112,5 +128,5 @@ export function createSession(fixtures, storage) {
     return getState();
   }
 
-  return { getState, act };
+  return { getState, act, selectCase };
 }

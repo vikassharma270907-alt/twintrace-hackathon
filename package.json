@@ -1,0 +1,21 @@
+{
+  "name": "codex-antigravity-meta-xr",
+  "version": "1.0.0",
+  "description": "Meta VR Start Competition 2026: Twin Trace (Split Lab VR) & RecallRoom XR Spatial Command Center",
+  "scripts": {
+    "test": "node meta-hackathon/twintrace/tests/model.test.mjs",
+    "serve": "npx serve . -l 3000",
+    "qa": "cd meta-hackathon && python qa_twintrace.py"
+  },
+  "keywords": [
+    "meta-quest",
+    "webxr",
+    "data-leakage",
+    "machine-learning",
+    "spatial-computing",
+    "figma",
+    "antigravity"
+  ],
+  "author": "Vikas Sharma",
+  "license": "MIT"
+}

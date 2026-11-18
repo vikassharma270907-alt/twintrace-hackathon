@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { createSession, nearestNeighbor, splitEvidence } from "../src/model.js";
+import { createSession, nearestNeighbor, splitEvidence, estimateRetention } from "../src/model.js";
 
 const fixtures = JSON.parse(await readFile(new URL("../data/cases.json", import.meta.url), "utf8"));
 function memoryStore(initial) {
@@ -359,3 +359,37 @@ test("session wraps to first case after completing the last one", () => {
   assert.equal(wrapped.seed, fixtures.cases[0].seed);
   assert.equal(wrapped.stage, "inspect");
 });
+
+// ─── Settles & Meeder Half-Life Regression Spaced Retrieval (US-007) ───────
+
+test("estimateRetention computes exponential decay and half-life correctly", () => {
+  const now = 1700000000000;
+  // Brand new concept (no prior reviews) has 100% retention
+  const initial = estimateRetention(null, now);
+  assert.equal(initial.retention, 1.0);
+  assert.equal(initial.dueForReview, false);
+
+  // Review 24 hours ago with 1 correct review
+  const oneDayAgo = now - 24 * 3600 * 1000;
+  const history = { lastReviewTime: oneDayAgo, correctCount: 1, mistakeCount: 0 };
+  const result = estimateRetention(history, now);
+  assert.ok(result.retention > 0.6 && result.retention < 0.85);
+  assert.ok(result.halfLifeHours > 24); // Half-life increased with correct review
+
+  // Mistake reduces half-life
+  const withMistakes = estimateRetention({ lastReviewTime: oneDayAgo, correctCount: 0, mistakeCount: 2 }, now);
+  assert.ok(withMistakes.halfLifeHours < 15);
+  assert.equal(withMistakes.dueForReview, true);
+});
+
+test("session records spaced review history upon completing review verdict", () => {
+  const store = memoryStore(null);
+  const session = createSession(fixtures, store);
+  session.act("inspect");
+  session.act("repair");
+  const done = session.act("hold"); // Correct verdict for seed 0 (leakage)
+  assert.ok(done.retention);
+  assert.ok(done.retention.retention >= 0.99);
+  assert.equal(done.retention.dueForReview, false);
+});
+
